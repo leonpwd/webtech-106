@@ -23,6 +23,8 @@ Each lab folder contains its own code and instructions.
 ## Contribute
 Contributions are welcome! Please fork the repository and submit a pull request.
 
+TODO :  ADD PREREQUISITES? HOW TO LAUNCH THE PROJECT, ;;;;;;;
+
 ## Authors
 - Romain Barrière
 - Léon Dalle
