@@ -3,10 +3,9 @@
 ## Introduction
 This repository contains lab exercises for the Web Technologies course (Fall 2025). Each lab demonstrates a key web technology concept, and the project structure allows you to run and explore each lab independently.
 
-### Test en ligne
+### Test it out !
 A hosted version is available at :
 - [https://webtech.leobob.duckdns.org](https://webtech.leobob.duckdns.org)
-Check it out ! 
 
 
 ## Prerequisites

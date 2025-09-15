@@ -7,6 +7,7 @@ const PORT = 3000;
 const labs = fs.readdirSync(__dirname)
   .filter(f => fs.statSync(path.join(__dirname, f)).isDirectory() && f.startsWith('lab'));
 
+const labPorts = { lab1: 8081, lab2: 8082, lab3: 8083 };
 
 const labUrlsDocker = {
   lab1: 'https://webtechlab1.leobob.duckdns.org',
