@@ -1,0 +1,28 @@
+name: Build and Run All Labs with Docker
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t webtech-106 .
+
+      - name: Run all labs and landing page
+        run: |
+          docker run -d -p 3000:3000 -p 8081:8081 -p 8082:8082 webtech-106
+          sleep 10 # wait for servers to start
+          curl -f http://localhost:3000 || (echo 'Landing page failed' && exit 1)
+          curl -f http://localhost:8081 || (echo 'Lab1 failed' && exit 1)
+          curl -f http://localhost:8082 || (echo 'Lab2 failed' && exit 1)
