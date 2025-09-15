@@ -8,5 +8,8 @@
     "start": "node index.js"
   },
   "author": "Léon D",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^3.1.10"
+  }
 }
