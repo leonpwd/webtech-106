@@ -1,0 +1,12 @@
+{
+  "name": "lab2",
+  "version": "1.0.0",
+  "description": "lab2 webtech fall 2026 - basic HTTP server in NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Léon D",
+  "license": "ISC"
+}
