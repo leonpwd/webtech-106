@@ -7,7 +7,15 @@ const PORT = 3000;
 const labs = fs.readdirSync(__dirname)
   .filter(f => fs.statSync(path.join(__dirname, f)).isDirectory() && f.startsWith('lab'));
 
-const labPorts = { lab1: 8081, lab2: 8082 };
+
+const labUrlsDocker = {
+  lab1: 'https://webtechlab1.leobob.duckdns.org',
+  lab2: 'https://webtechlab2.leobob.duckdns.org',
+  lab3: 'https://webtechlab3.leobob.duckdns.org'
+};
+
+const isDocker = process.env.DOCKER === 'true';
+
 const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,8 +35,12 @@ const html = `<!DOCTYPE html>
   <p>Select a lab to view or run:</p>
   <ul>
     ${labs.map(lab => {
-      const port = labPorts[lab] || 3000;
-      return `<li><a href="http://localhost:${port}/" target="_blank">${lab} (port ${port})</a></li>`;
+      if (isDocker && labUrlsDocker[lab]) {
+        return `<li><a href="${labUrlsDocker[lab]}" target="_blank">${lab} (${labUrlsDocker[lab]})</a></li>`;
+      } else {
+        const port = labPorts[lab] || 3000;
+        return `<li><a href="http://localhost:${port}/" target="_blank">${lab} (port ${port})</a></li>`;
+      }
     }).join('\n')}
   </ul>
   <p>Each lab runs its own server on a different port. Use <code>npm run labX</code> to start a specific lab.</p>

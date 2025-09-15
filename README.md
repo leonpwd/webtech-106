@@ -3,6 +3,12 @@
 ## Introduction
 This repository contains lab exercises for the Web Technologies course (Fall 2025). Each lab demonstrates a key web technology concept, and the project structure allows you to run and explore each lab independently.
 
+### Test en ligne
+A hosted version is available at :
+- [https://webtech.leobob.duckdns.org](https://webtech.leobob.duckdns.org)
+Check it out ! 
+
+
 ## Prerequisites
 - Node.js (v22 or higher recommended)
 - npm (Node Package Manager)
@@ -45,7 +51,6 @@ Visit: [http://localhost:8082/hello?name=YourName](http://localhost:8082/hello?n
 #### Example: Try the /about route in lab1
 Visit: [http://localhost:8082/about](http://localhost:8082/about)
 
----
 Each lab folder contains its own code and instructions if needed.
 
 ## Contribute
