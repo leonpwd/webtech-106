@@ -1,7 +1,7 @@
 # Webtech Labs - Team 106
 
 ## Introduction
-This repository contains lab exercises for the Web Technologies course (Fall 2025). Each lab demonstrates a key web technology concept, and the project structure allows you to run and explore each lab independently.
+This repository contains lab exercises for the Web Technologies course (Fall 2025).
 
 ### Test it out !
 A hosted version is available at :
@@ -38,17 +38,8 @@ npm run all
 # Starts landing page and all labs (e.g., lab1 on 8081, lab2 on 8082)
 ```
 
-### Start a specific lab
-```bash
-npm run lab1
-# Starts lab1 on http://localhost:8081
-```
-
 #### Example: Try the /hello route in lab1
-Visit: [http://localhost:8082/hello?name=YourName](http://localhost:8082/hello?name=YourName)
-
-#### Example: Try the /about route in lab1
-Visit: [http://localhost:8082/about](http://localhost:8082/about)
+Visit: [http://localhost:8081/hello?name=YourName](http://localhost:8081/hello?name=YourName)
 
 Each lab folder contains its own code and instructions if needed.
 
