@@ -1,7 +1,7 @@
 {
   "name": "webtech-106",
   "version": "1.0.0",
-  "description": "The repo node root project, able to launch each project separately !",
+  "description": "The repo node root project",
   "homepage": "https://github.com/PingoLeon/webtech-106#readme",
   "bugs": {
     "url": "https://github.com/PingoLeon/webtech-106/issues"
@@ -17,10 +17,9 @@
   "scripts": {
     "start": "npm run landing",
     "landing": "node index.js",
-    "lab1": "cd lab1 && PORT=8081 npm start",
-    "lab2": "cd lab2 && PORT=8082 npm start",
-    "all": "npm-run-all --parallel landing lab1",
-    "install:labs": "for d in lab*; do if [ -f \"$d/package.json\" ]; then cd \"$d\" && npm install && cd ..; fi; done"
+    "server": "cd server && PORT=8081 npm start",
+    "all": "npm-run-all --parallel landing server",
+    "install:labs": "for d in server; do if [ -f \"$d/package.json\" ]; then cd \"$d\" && npm install && cd ..; fi; done"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

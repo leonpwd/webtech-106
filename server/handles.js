@@ -1,46 +1,32 @@
-// ./handles.js
-// Necessary imports
-// Add missing imports
-const url = require('url');
-const qs = require('querystring');
-const { isAbsolute } = require('path');
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const router = express.Router();
 
-module.exports = {
-  serverHandle: function (req, res) {
-    const route = url.parse(req.url);
-    const path = route.pathname;
-    const params = qs.parse(route.query);
 
-    // Dynamic JSON file serving
-    if (path.startsWith('/')) {
-      const fs = require('fs');
-      const jsonFile = path.replace(/^\//, '') + '.json'; // take the path and add .json
-      const filePath = __dirname + '/content/' + jsonFile; // all files are in content folder
-      if (fs.existsSync(filePath)) { 
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        const data = fs.readFileSync(filePath);
-        res.end(data);
-        return;
-      }
+// /about route serving content/about.json
+router.get('/about', (req, res) => {
+  const filePath = path.join(__dirname, 'content', 'about.json');
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      res.status(404).type('text').send('About page not found.');
+    } else {
+      res.type('json').send(data);
     }
+  });
+});
 
-    // /hello route
-    if (path === '/hello' && 'name' in params) {
-      res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.write('Hello ' + params['name']);
-      res.end();
-      return;
-    }else if (path === '/hello') {
-        res.writeHead(200, {'Content-Type': 'text/plain'});
-        res.write('Hello Anon');
-        res.end();
-        return;
-    }
+// /hello route
+router.get('/hello', (req, res) => {
+  const name = req.query.name || 'Anon';
+  res.type('text').send('Hello ' + name);
+});
 
+// Default 404 handler for unmatched routes
+router.use((req, res) => {
+  res.status(404).type('text').send(
+    'La page /hello vous dit bonjour, et vous pouvez personnaliser la réponse avec /hello?name=VotreNom. '
+  );
+});
 
-    // Default 404
-    res.writeHead(404, {'Content-Type': 'text/plain'});
-    res.write('La page /hello vous dit bonjour, et vous pouvez personnaliser la réponse avec /hello?name=VotreNom. ');
-    res.end();
-  }
-};
+module.exports = router;
