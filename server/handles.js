@@ -3,6 +3,28 @@ const fs = require('fs');
 const path = require('path');
 const router = express.Router();
 
+// Home page route (root) with name form
+router.get('/', (req, res) => {
+  res.type('html').send(`
+    <h1>Welcome!</h1>
+    <form action="/hello" method="get">
+      <label for="name">Enter your name:</label>
+      <input type="text" id="name" name="name" />
+      <button type="submit">Go to /hello</button>
+    </form>
+    <p>Here are example commands you can test on this server:</p>
+    <pre>
+curl -i http://localhost:8081/articles
+curl -i -X POST http://localhost:8081/articles -H "Content-Type: application/json" -d '{"title":"New Article","content":"Some content","date":"09/19/2025","author":"Your Name"}'
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments
+curl -i -X POST http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d '{"content":"Test comment","author":"Your Name"}'
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+    </pre>
+  `);
+});
+
+
 // Example hard-coded database
 const db = {
   articles: [
@@ -92,10 +114,24 @@ router.get('/articles/:articleId/comments/:commentId', (req, res) => {
   res.json(comment);
 });
 
-// /hello route
+
+// /hello route - improved home page with example commands
 router.get('/hello', (req, res) => {
   const name = req.query.name || 'Anon';
-  res.type('text').send('Hello ' + name);
+  res.type('html').send(`
+    <h1>Welcome${name ? ', ' + name : ''}!</h1>
+    <p>Here are example commands you can test on this server:</p>
+    <pre>
+curl -i http://localhost:8081/hello   # Greet the server
+curl -i http://localhost:8081/articles # List all articles
+curl -i -X POST http://localhost:8081/articles -H "Content-Type: application/json" -d '{"title":"New Article","content":"Some content","date":"09/19/2025","author":"Your Name"}' # Add a new article
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b # Get article by ID
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments # List comments for an article
+curl -i -X POST http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d '{"content":"Test comment","author":"Your Name"}' # Add a comment to an article
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d # Get a specific comment by ID
+    </pre>
+    <p>Change IDs as needed to match your data.</p>
+  `);
 });
 
 
