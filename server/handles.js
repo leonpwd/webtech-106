@@ -122,13 +122,20 @@ router.get('/hello', (req, res) => {
     <h1>Welcome${name ? ', ' + name : ''}!</h1>
     <p>Here are example commands you can test on this server:</p>
     <pre>
-curl -i http://localhost:8081/hello   # Greet the server
-curl -i http://localhost:8081/articles # List all articles
-curl -i -X POST http://localhost:8081/articles -H "Content-Type: application/json" -d '{"title":"New Article","content":"Some content","date":"09/19/2025","author":"Your Name"}' # Add a new article
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b # Get article by ID
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments # List comments for an article
-curl -i -X POST http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d '{"content":"Test comment","author":"Your Name"}' # Add a comment to an article
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d # Get a specific comment by ID
+<p>Greet the server</p>
+curl -i http://localhost:8081/hello 
+<p>List all articles</p>
+curl -i http://localhost:8081/articles 
+<p>Add a new article</p>
+curl -i -X POST http://localhost:8081/articles -H "Content-Type: application/json" -d '{"title":"New Article","content":"Some content","date":"09/19/2025","author":"Your Name"}'
+<p>Get an article by ID</p>
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
+<p>List comments for an article</p>
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments
+<p>Add a comment to an article</p>
+curl -i -X POST http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d '{"content":"Test comment","author":"Your Name"}' 
+<p>Get a specific comment by ID</p>
+curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d 
     </pre>
     <p>Change IDs as needed to match your data.</p>
   `);
