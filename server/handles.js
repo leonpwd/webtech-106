@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const router = express.Router();
 
+// Detect if running in Docker and set the base URL accordingly
+const isDocker = process.env.DOCKER === 'true';
+const baseUrl = isDocker ? 'https://webtechserver.leobob.duckdns.org' : 'http://localhost:8081';
+
 // Home page route (root) with name form
 router.get('/', (req, res) => {
   res.type('html').send(`
@@ -12,28 +16,28 @@ router.get('/', (req, res) => {
       <input type="text" id="name" name="name" />
       <button type="submit">Go to /hello</button>
     </form>
-    <p>Here are example commands you can test on this server (Powershell or Linux, CMD needs antislash for double quotes):</p>
+    <p>Here are example commands you can test on this server :</p>
     <pre>
 Greet the server
-curl -i http://localhost:8081/hello 
+curl -i ${baseUrl}/hello 
 
 List all articles
-curl -i http://localhost:8081/articles 
+curl -i ${baseUrl}/articles 
 
 Add a new article
-curl -i -X POST http://localhost:8081/articles -H "Content-Type: application/json" -d "{\"title\":\"New Article\",\"content\":\"Some content\",\"date\":\"09/19/2025\",\"author\":\"Your Name\"}"
+curl -i -X POST ${baseUrl}/articles -H "Content-Type: application/json" -d "{\"title\":\"New Article\",\"content\":\"Some content\",\"date\":\"09/19/2025\",\"author\":\"Your Name\"}"
 
 Get an article by ID
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
+curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
 
 List comments for an article
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments
+curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments
 
 Add a comment to an article
-curl -i -X POST http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d "{\"content\":\"Test comment\",\"author\":\"Your Name\"}"
+curl -i -X POST ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d "{\"content\":\"Test comment\",\"author\":\"Your Name\"}"
 
 Get a specific comment by ID
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d 
+curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d 
     </pre>
   `);
 });
@@ -137,25 +141,25 @@ router.get('/hello', (req, res) => {
     <p>Here are example commands you can test on this server:</p>
     <pre>
 Greet the server
-curl -i http://localhost:8081/hello 
+curl -i ${baseUrl}/hello 
 
 List all articles
-curl -i http://localhost:8081/articles 
+curl -i ${baseUrl}/articles 
 
 Add a new article
-curl -i -X POST http://localhost:8081/articles -H "Content-Type: application/json" -d '{"title":"New Article","content":"Some content","date":"09/19/2025","author":"Your Name"}'
+curl -i -X POST ${baseUrl}/articles -H "Content-Type: application/json" -d '{"title":"New Article","content":"Some content","date":"09/19/2025","author":"Your Name"}'
 
 Get an article by ID
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
+curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
 
 List comments for an article
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments
+curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments
 
 Add a comment to an article
-curl -i -X POST http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d '{"content":"Test comment","author":"Your Name"}' 
+curl -i -X POST ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d '{"content":"Test comment","author":"Your Name"}' 
 
 Get a specific comment by ID
-curl -i http://localhost:8081/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d 
+curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d 
     </pre>
     <p>Change IDs as needed to match your data.</p>
   `);
