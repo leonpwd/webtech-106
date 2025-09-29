@@ -10,9 +10,7 @@ const labs = fs.readdirSync(__dirname)
 const labPorts = { lab1: 8081, lab2: 8082, lab3: 8083 };
 
 const labUrlsDocker = {
-  lab1: 'https://webtechlab1.leobob.duckdns.org',
-  lab2: 'https://webtechlab2.leobob.duckdns.org',
-  lab3: 'https://webtechlab3.leobob.duckdns.org'
+  lab1: 'https://webtechserver.leobob.duckdns.org',
 };
 
 const isDocker = process.env.DOCKER === 'true';
@@ -33,18 +31,15 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
   <h1>Web Technologies Labs</h1>
-  <p>Select a lab to view or run:</p>
+  <p>Access the labs server:</p>
   <ul>
-    ${labs.map(lab => {
-      if (isDocker && labUrlsDocker[lab]) {
-        return `<li><a href="${labUrlsDocker[lab]}" target="_blank">${lab} (${labUrlsDocker[lab]})</a></li>`;
-      } else {
-        const port = labPorts[lab] || 3000;
-        return `<li><a href="http://localhost:${port}/" target="_blank">${lab} (port ${port})</a></li>`;
-      }
-    }).join('\n')}
+    <li>
+      <a href="${isDocker ? 'https://webtechserver.leobob.duckdns.org' : 'http://localhost:8081'}" target="_blank">
+        Labs Server (${isDocker ? 'webtechserver.leobob.duckdns.org' : 'localhost:8081'})
+      </a>
+    </li>
   </ul>
-  <p>Each lab runs its own server on a different port. Use <code>npm run labX</code> to start a specific lab.</p>
+  <p>All labs are available on this single server. Use <code>npm run lab2</code> to start the server locally.</p>
 </body>
 </html>`;
 

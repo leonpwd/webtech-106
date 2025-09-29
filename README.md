@@ -21,7 +21,7 @@ Clone the repository and install dependencies:
 git clone https://github.com/PingoLeon/webtech-106.git
 cd webtech-106
 npm install
-npm run install:labs
+npm run install
 ```
 
 ## Usage
@@ -29,13 +29,13 @@ npm run install:labs
 ### Start the landing page (index)
 ```bash
 npm start
-# Opens http://localhost:3000 with links to all labs
+# Opens http://localhost:3000 with relevant links
 ```
 
 ### Start all labs and landing page in parallel
 ```bash
 npm run all
-# Starts landing page and all labs (e.g., lab1 on 8081, lab2 on 8082)
+# Starts landing page and the server
 ```
 
 #### Example: Try the /hello route in lab1
