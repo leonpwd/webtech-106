@@ -147,7 +147,7 @@ List all articles
 curl -i ${baseUrl}/articles 
 
 Add a new article
-curl -i -X POST ${baseUrl}/articles -H "Content-Type: application/json" -d '{"title":"New Article","content":"Some content","date":"09/19/2025","author":"Your Name"}'
+curl -i -X POST ${baseUrl}/articles -H "Content-Type: application/json" -d "{\"title\":\"New Article\",\"content\":\"Some content\",\"date\":\"09/19/2025\",\"author\":\"Your Name\"}"
 
 Get an article by ID
 curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b
@@ -156,7 +156,7 @@ List comments for an article
 curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments
 
 Add a comment to an article
-curl -i -X POST ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d '{"content":"Test comment","author":"Your Name"}' 
+curl -i -X POST ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments -H "Content-Type: application/json" -d "{\"content\":\"Test comment\",\"author\":\"Your Name\"}" 
 
 Get a specific comment by ID
 curl -i ${baseUrl}/articles/6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b/comments/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d 
