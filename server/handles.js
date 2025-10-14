@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Detect if running in Docker and set the base URL accordingly
 const isDocker = process.env.DOCKER === 'true';
-const baseUrl = isDocker ? 'https://webtechserver.leobob.duckdns.org' : 'http://localhost:8081';
+const baseUrl = isDocker ? 'https://webtechserver.leobob.duckdns.org' : 'http://localhost:8082';
 
 // Home page route (root) with name form
 router.get('/', (req, res) => {
