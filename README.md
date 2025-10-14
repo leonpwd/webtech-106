@@ -3,7 +3,10 @@
 A modern, animated Next.js web application showcasing the latest scientific and engineering breakthroughs. Built with cutting-edge technologies and featuring a beautiful, responsive design.
 
 ## 🌟 Live Demo
-Experience the application at: **[http://localhost:8082](http://localhost:8082)**
+
+**🚀 Production:** [https://webtech-106-delta.vercel.app/](https://webtech-106-delta.vercel.app/)
+
+**🔧 Local Development:** [http://localhost:8082](http://localhost:8082)
 
 ## ✨ Features
 
