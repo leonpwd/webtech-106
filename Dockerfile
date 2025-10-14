@@ -7,5 +7,5 @@ RUN npm install
 
 COPY . .
 
-CMD ["npm", "run", "all"]
+CMD ["npm", "start"]
 LABEL org.opencontainers.image.source=https://github.com/PingoLeon/webtech-106
