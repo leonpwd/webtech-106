@@ -21,9 +21,9 @@
     "serve": "npm run build && npm start",
     "lint": "cd server && npm run lint",
     "type-check": "cd server && npm run type-check",
-    "install": "npm install && cd server && npm install",
     "clean": "cd server && rm -rf .next node_modules/.cache",
-    "setup": "npm run install"
+    "setup": "cd server && npm install",
+    "postinstall": "cd server && npm install"
   },
   "dependencies": {},
   "devDependencies": {}
