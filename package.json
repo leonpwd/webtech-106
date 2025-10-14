@@ -1,7 +1,7 @@
 {
   "name": "webtech-106",
   "version": "1.0.3",
-  "description": "The repo node root project",
+  "description": "Science and Engineering Articles Website - Next.js + TypeScript + Tailwind CSS",
   "homepage": "https://github.com/PingoLeon/webtech-106#readme",
   "bugs": {
     "url": "https://github.com/PingoLeon/webtech-106/issues"
@@ -15,17 +15,16 @@
   "type": "commonjs",
   "main": "server/index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "test": "mocha server/test/**/*.test.js",
-    "dev": "nodemon server/index.js"
+    "dev": "cd server && npm run dev",  
+    "build": "cd server && npm run build",
+    "start": "cd server && npm run start",
+    "serve": "npm run build && npm start",
+    "lint": "cd server && npm run lint",
+    "type-check": "cd server && npm run type-check",
+    "clean": "cd server && rm -rf .next node_modules/.cache",
+    "setup": "cd server && npm install",
+    "postinstall": "cd server && npm install"
   },
-  "dependencies": {
-    "express": "^5.1.0",
-    "uuid": "^9.0.0"
-  },
-  "devDependencies": {
-    "mocha": "^10.2.0",
-    "nodemon": "^3.1.10",
-    "supertest": "^6.3.3"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
