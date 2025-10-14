@@ -60,13 +60,14 @@ const articles = {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     articleId: string
-  }
+  }>
 }
 
-export default function ArticlePage({ params }: PageProps) {
-  const article = articles[params.articleId as keyof typeof articles]
+export default async function ArticlePage({ params }: PageProps) {
+  const { articleId } = await params
+  const article = articles[articleId as keyof typeof articles]
 
   // If article not found, show 404-like message
   if (!article) {
@@ -75,7 +76,7 @@ export default function ArticlePage({ params }: PageProps) {
         <div className="text-center py-12">
           <h1 className="text-4xl font-bold mb-4">Article Not Found</h1>
           <p className="text-muted-foreground mb-8">
-            The article you're looking for doesn't exist or has been moved.
+            The article you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
           <Link href="/articles">
             <Button>

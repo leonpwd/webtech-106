@@ -11,7 +11,7 @@ export default function ContactsPage() {
           Get In Touch
         </h1>
         <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400 mt-6">
-          Have questions, suggestions, or want to contribute? We'd love to hear from you. 
+          Have questions, suggestions, or want to contribute? We&apos;d love to hear from you. 
           Reach out to our team through any of the channels below.
         </p>
       </section>
@@ -85,7 +85,7 @@ export default function ContactsPage() {
             <CardHeader>
               <CardTitle className="text-center">Send us a Message</CardTitle>
               <CardDescription className="text-center">
-                Fill out the form below and we'll get back to you as soon as possible.
+                Fill out the form below and we&apos;ll get back to you as soon as possible.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
