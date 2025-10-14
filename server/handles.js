@@ -1,11 +1,12 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 
 // Detect if running in Docker and set the base URL accordingly
 const isDocker = process.env.DOCKER === 'true';
-const baseUrl = isDocker ? 'https://webtechserver.leobob.duckdns.org' : 'http://localhost:8081';
+const baseUrl = isDocker ? 'https://webtechserver.leobob.duckdns.org' : 'http://localhost:8082';
 
 // Home page route (root) with name form
 router.get('/', (req, res) => {
@@ -90,7 +91,15 @@ router.get('/articles', (req, res) => {
 // POST /articles - add a new article
 router.post('/articles', express.json(), (req, res) => {
   const { title, content, date, author } = req.body;
-  const id = require('crypto').randomUUID();
+  
+  // Validation
+  if (!title || !content || !date || !author) {
+    return res.status(400).json({ 
+      error: 'Missing required fields: title, content, date, and author are required' 
+    });
+  }
+  
+  const id = uuidv4();
   const article = { id, title, content, date, author };
   db.articles.push(article);
   res.status(201).json(article);
@@ -116,7 +125,21 @@ router.get('/articles/:articleId/comments', (req, res) => {
 // POST /articles/:articleId/comments - add a new comment to an article
 router.post('/articles/:articleId/comments', express.json(), (req, res) => {
   const { content, author } = req.body;
-  const id = require('crypto').randomUUID();
+  
+  // Validation
+  if (!content || !author) {
+    return res.status(400).json({ 
+      error: 'Missing required fields: content and author are required' 
+    });
+  }
+  
+  // Check if article exists
+  const article = db.articles.find(a => a.id === req.params.articleId);
+  if (!article) {
+    return res.status(404).json({ error: 'Article not found' });
+  }
+  
+    const id = uuidv4();
   const timestamp = Math.floor(Date.now() / 1000);
   const comment = { id, timestamp, content, articleId: req.params.articleId, author };
   db.comments.push(comment);
