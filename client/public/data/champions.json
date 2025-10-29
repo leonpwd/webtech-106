@@ -1,0 +1,43 @@
+{
+  "type": "champion",
+  "format": "standAloneComplex",
+  "version": "14.10.1",
+  "data": {
+    "Aatrox": {
+      "version": "14.10.1",
+      "id": "Aatrox",
+      "key": "266",
+      "name": "Aatrox",
+      "title": "The Darkin Blade",
+      "blurb": "Once honored defenders...",
+      "info": { "attack": 8, "defense": 4, "magic": 3, "difficulty": 4 },
+      "image": { "full": "Aatrox.png" },
+      "tags": ["Fighter", "Tank"],
+      "stats": { "hp": 580 }
+    },
+    "Ahri": {
+      "version": "14.10.1",
+      "id": "Ahri",
+      "key": "103",
+      "name": "Ahri",
+      "title": "Nine-Tailed Fox",
+      "blurb": "A Vastaya who...",
+      "info": { "attack": 3, "defense": 4, "magic": 8, "difficulty": 5 },
+      "image": { "full": "Ahri.png" },
+      "tags": ["Mage", "Assassin"],
+      "stats": { "hp": 500 }
+    },
+    "LeeSin": {
+      "version": "14.10.1",
+      "id": "LeeSin",
+      "key": "64",
+      "name": "Lee Sin",
+      "title": "The Blind Monk",
+      "blurb": "A master fighter...",
+      "info": { "attack": 8, "defense": 5, "magic": 3, "difficulty": 7 },
+      "image": { "full": "LeeSin.png" },
+      "tags": ["Fighter"],
+      "stats": { "hp": 575 }
+    }
+  }
+}

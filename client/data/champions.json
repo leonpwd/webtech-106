@@ -1,0 +1,41 @@
+[
+  {
+    "id": "Aatrox",
+    "name": "Aatrox",
+    "image": "Aatrox.png",
+    "role": "Fighter",
+    "abilities": [
+      { "key": "P", "name": "Deathbringer Stance" },
+      { "key": "Q", "name": "The Darkin Blade" },
+      { "key": "W", "name": "Infernal Chains" },
+      { "key": "E", "name": "Umbral Dash" },
+      { "key": "R", "name": "World Ender" }
+    ]
+  },
+  {
+    "id": "Ahri",
+    "name": "Ahri",
+    "image": "Ahri.png",
+    "role": "Mage",
+    "abilities": [
+      { "key": "P", "name": "Essence Theft" },
+      { "key": "Q", "name": "Orb of Deception" },
+      { "key": "W", "name": "Fox-Fire" },
+      { "key": "E", "name": "Charm" },
+      { "key": "R", "name": "Spirit Rush" }
+    ]
+  },
+  {
+    "id": "LeeSin",
+    "name": "Lee Sin",
+    "image": "LeeSin.png",
+    "role": "Fighter",
+    "abilities": [
+      { "key": "P", "name": "Flurry" },
+      { "key": "Q", "name": "Sonic Wave / Resonating Strike" },
+      { "key": "W", "name": "Safeguard / Iron Will" },
+      { "key": "E", "name": "Tempest / Cripple" },
+      { "key": "R", "name": "Dragon's Rage" }
+    ]
+  }
+]
