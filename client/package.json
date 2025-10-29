@@ -3,7 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+  "update-champions": "node ./scripts/update-champions.js",
+    "predev": "npm run update-champions",
     "dev": "next dev -p 3000 --turbopack",
+    "prebuild": "npm run update-champions",
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint"
