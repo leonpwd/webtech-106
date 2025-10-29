@@ -3,9 +3,10 @@ import React from 'react'
 import ChampionCard from '../../components/ChampionCard'
 
 async function fetchChampions(){
-  const res = await fetch(new URL('../../data/champions.json', import.meta.url));
-  if(!res.ok) throw new Error('Failed to load champions')
-  return res.json()
+  // Import the JSON directly so Next.js can bundle it correctly for server-side
+  // rendering instead of trying to fetch a runtime asset URL.
+  const data = await import('../../data/champions.json')
+  return data.default ?? data
 }
 
 export default async function ChampionsPage(){
