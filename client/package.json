@@ -3,15 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-  "update-champions": "node ./scripts/update-champions.js",
-    "predev": "npm run update-champions",
+    "push-champions": "node ./scripts/push-champions-to-supabase.js",
     "dev": "next dev -p 3000 --turbopack",
-    "prebuild": "npm run update-champions",
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.34.0",
     "next": "^15.5.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
