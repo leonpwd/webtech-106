@@ -7,8 +7,10 @@ async function fetchChampions(){
   // Dynamically import the Supabase helper so we don't cause module-evaluation errors
   let getSupabase: any = null
   try {
-    // @ts-ignore - supabase client is CommonJS and may not have TS types here
-    const mod = await import('../../../supabase/client')
+  // Dynamically import the local client wrapper so dependencies resolve from
+  // `client/node_modules` during the build.
+  // @ts-ignore - the dynamically-imported module may not have exact TS types here
+  const mod = await import('../../lib/supabaseClient')
     getSupabase = mod.default ?? mod
   } catch (e) {
     getSupabase = null
@@ -16,8 +18,17 @@ async function fetchChampions(){
 
   const supabase = typeof getSupabase === 'function' ? getSupabase() : null
   if(!supabase){
-    // Fail fast: we removed the local JSON fallback, so Supabase must be configured
-    throw new Error('Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in the project root .env')
+    // Fallback to local JSON file when Supabase env vars are not present. This
+    // makes builds possible without requiring secrets in the environment.
+    try {
+      // Import the JSON statically from the app's public data folder.
+      // Path: client/app/champions/page.tsx -> ../../public/data/champions.json
+      const local = await import('../../public/data/champions.json')
+      const rows = Array.isArray(local?.default ? local.default : local) ? (local?.default ?? local) : []
+      return rows.map((r:any) => ({ ...(r.data || {}), id: r.id, name: r.name || (r.data && r.data.name) }))
+    } catch (err) {
+      throw new Error('Supabase is not configured and local champions JSON could not be loaded')
+    }
   }
 
   const { data, error } = await supabase
