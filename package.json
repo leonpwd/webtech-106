@@ -15,18 +15,19 @@
   "type": "commonjs",
   "main": "server/index.js",
   "scripts": {
-    "dev": "cd server && npm run dev",
-    "build": "cd server && npm run build",
-    "start": "cd server && npm run start",
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd client && npm run start",
     "serve": "npm run build && npm start",
-    "lint": "cd server && npm run lint",
-    "type-check": "cd server && npm run type-check",
-    "clean": "cd server && rm -rf .next node_modules/.cache",
-    "setup": "cd server && npm install",
-    "postinstall": "cd server && npm install"
+    "lint": "cd client && npm run lint",
+    "type-check": "cd client && npm run type-check",
+    "clean": "cd client && rm -rf .next node_modules/.cache",
+    "setup": "cd client && npm install",
+    "postinstall": "cd client && npm install"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.78.0",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "lucide-react": "^0.553.0"
   }
 }
