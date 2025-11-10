@@ -1,21 +1,18 @@
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const path = require('path')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    appDir: true,
-  },
+  // Note: `appDir` is enabled by default in newer Next.js versions.
+  // Removing `experimental.appDir` to avoid Vercel warnings about invalid config keys.
   webpack: (config) => {
+    config.resolve = config.resolve || {}
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      "@": path.resolve(__dirname),
-    };
-    return config;
+      '@': path.resolve(__dirname),
+    }
+    return config
   },
-};
+}
 
-export default nextConfig;
+module.exports = nextConfig
