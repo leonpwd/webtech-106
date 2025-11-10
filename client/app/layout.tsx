@@ -1,57 +1,27 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import '../styles/globals.css'
 import Link from 'next/link'
-import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-  title: 'Science & Engineering Articles',
-  description: 'A collection of articles on science, engineering, and technology',
-  keywords: ['science', 'engineering', 'technology', 'articles', 'research'],
-  authors: [{ name: 'Léon D' }, { name: 'Nirziin' }],
+export const metadata = {
+  title: 'League of Legends — Champions Hub (Client)',
+  description: 'Modern Arcane-themed champions index'
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }){
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <div className="min-h-screen bg-background font-sans antialiased">
-          <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 items-center">
-              <div className="mr-4 hidden md:flex">
-                <Link className="mr-6 flex items-center space-x-2" href="/">
-                  <span className="hidden font-bold sm:inline-block">
-                    Science & Engineering
-                  </span>
-                </Link>
-              </div>
-              <nav className="flex items-center space-x-6 text-sm font-medium">
-                <Link href="/articles" className="transition-colors hover:text-foreground/80">
-                  Articles
-                </Link>
-                <Link href="/about" className="transition-colors hover:text-foreground/80">
-                  About
-                </Link>
-                <Link href="/contacts" className="transition-colors hover:text-foreground/80">
-                  Contacts
-                </Link>
-              </nav>
-            </div>
-          </header>
-          <main className="flex-1">{children}</main>
-          <footer className="border-t py-6 md:py-0">
-            <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
-              <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-                Built with Next.js, TypeScript, and Tailwind CSS.
-              </p>
-            </div>
-          </footer>
-        </div>
+    <html lang="en">
+      <body className="min-h-screen bg-neutral-900 text-white">
+        <header className="border-b border-neutral-800 py-4">
+          <div className="container mx-auto px-4 flex items-center justify-between">
+            <Link href="/" className="font-extrabold text-2xl">LoL Champions</Link>
+            <nav className="space-x-6">
+              <Link href="/champions" className="text-sm">Champions</Link>
+              <Link href="/worlds" className="text-sm">Worlds 2025</Link>
+              <Link href="/about" className="text-sm">About</Link>
+            </nav>
+          </div>
+        </header>
+        <main>{children}</main>
+        <footer className="border-t border-neutral-800 py-6 text-center text-sm mt-12">Built with Next.js · Tailwind</footer>
       </body>
     </html>
   )

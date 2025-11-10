@@ -1,6 +1,6 @@
-# Science & Engineering Articles Hub 🚀
+# League of Legends Champions Index & Quiz 🚀
 
-A modern, animated Next.js web application showcasing the latest scientific and engineering breakthroughs. Built with cutting-edge technologies and featuring a beautiful, responsive design.
+A modern, animated Next.js web application showcasing an index of League of Legends champions and an interactive quiz about these characters. Built with cutting-edge technologies and featuring a beautiful, responsive design.
 
 ## 🌟 Live Demo
 
@@ -22,8 +22,8 @@ A modern, animated Next.js web application showcasing the latest scientific and 
 
 ### 📱 Pages & Functionality
 - **Home** (`/`) - Stunning animated landing page with hero section
-- **Articles** (`/articles`) - Article listing with filtering and search
-- **Dynamic Routes** (`/articles/[articleId]`) - Individual article pages
+- **Champions** (`/champions`) - Index of League of Legends champions
+- **Quiz** (`/quiz`) - Interactive quiz about League of Legends champions
 - **About** (`/about`) - Platform information and mission
 - **Contacts** (`/contacts`) - Contact forms and information
 
