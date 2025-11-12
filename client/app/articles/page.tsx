@@ -90,7 +90,7 @@ export default function ArticlesPage() {
           {categories.map((category) => (
             <Button
               key={category}
-              variant={category === 'All' ? 'default' : 'outline-solid'}
+              variant={category === 'All' ? 'default' : 'outline'}
               size="sm"
               className="mb-2"
             >
