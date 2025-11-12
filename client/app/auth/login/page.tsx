@@ -63,7 +63,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded border px-3 py-2 bg-neutral-800 text-white placeholder:text-neutral-400"
+                className="mt-1 block w-full rounded-sm border px-3 py-2 bg-neutral-800 text-white placeholder:text-neutral-400"
                 required
               />
             </div>
@@ -74,7 +74,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded border px-3 py-2 pr-20 bg-neutral-800 text-white placeholder:text-neutral-400"
+                  className="block w-full rounded-sm border px-3 py-2 pr-20 bg-neutral-800 text-white placeholder:text-neutral-400"
                   required
                 />
                 <button

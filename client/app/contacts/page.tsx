@@ -94,7 +94,7 @@ export default function ContactsPage() {
                   <label className="text-sm font-medium" htmlFor="name">Name</label>
                   <input 
                     id="name"
-                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
                     placeholder="Your full name"
                   />
                 </div>
@@ -103,7 +103,7 @@ export default function ContactsPage() {
                   <input 
                     id="email"
                     type="email"
-                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
                     placeholder="your.email@example.com"
                   />
                 </div>
@@ -112,7 +112,7 @@ export default function ContactsPage() {
                 <label className="text-sm font-medium" htmlFor="subject">Subject</label>
                 <input 
                   id="subject"
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
                   placeholder="What's this about?"
                 />
               </div>
@@ -121,7 +121,7 @@ export default function ContactsPage() {
                 <textarea 
                   id="message"
                   rows={5}
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-primary"
                   placeholder="Tell us more about your inquiry..."
                 />
               </div>

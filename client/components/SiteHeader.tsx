@@ -97,14 +97,14 @@ export default function SiteHeader() {
             <div className="flex items-center gap-3">
               <Link
                 href="/auth/login"
-                className="text-sm px-3 py-1 rounded bg-transparent border border-neutral-700 hover:border-neutral-600"
+                className="text-sm px-3 py-1 rounded-sm bg-transparent border border-neutral-700 hover:border-neutral-600"
               >
                 Connexion
               </Link>
 
               <Link
                 href="/auth/register"
-                className="text-sm px-3 py-1 rounded bg-primary text-white hover:bg-primary/90"
+                className="text-sm px-3 py-1 rounded-sm bg-primary text-white hover:bg-primary/90"
               >
                 Inscription
               </Link>
@@ -114,14 +114,14 @@ export default function SiteHeader() {
               <button
                 onClick={() => setOpen((s) => !s)}
                 className={cn(
-                  "text-sm px-3 py-1 rounded bg-neutral-800 border border-neutral-700",
+                  "text-sm px-3 py-1 rounded-sm bg-neutral-800 border border-neutral-700",
                 )}
               >
                 {user.email || "Mon compte"}
               </button>
 
               {open && (
-                <div className="absolute right-0 mt-2 w-80 bg-neutral-900 border border-neutral-800 rounded shadow-lg p-4 z-50">
+                <div className="absolute right-0 mt-2 w-80 bg-neutral-900 border border-neutral-800 rounded-sm shadow-lg p-4 z-50">
                   <h4 className="font-semibold mb-2">Tableau de bord</h4>
                   <form onSubmit={handleUpdate} className="space-y-3">
                     <div>
@@ -129,7 +129,7 @@ export default function SiteHeader() {
                       <input
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="mt-1 block w-full rounded border px-3 py-2 bg-neutral-800 text-white placeholder:text-neutral-400"
+                        className="mt-1 block w-full rounded-sm border px-3 py-2 bg-neutral-800 text-white placeholder:text-neutral-400"
                       />
                     </div>
                     <div>
@@ -138,7 +138,7 @@ export default function SiteHeader() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="laisser vide pour ne pas changer"
-                        className="mt-1 block w-full rounded border px-3 py-2 bg-neutral-800 text-white placeholder:text-neutral-400"
+                        className="mt-1 block w-full rounded-sm border px-3 py-2 bg-neutral-800 text-white placeholder:text-neutral-400"
                       />
                     </div>
 
