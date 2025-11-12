@@ -15,6 +15,7 @@
   "type": "commonjs",
   "main": "server/index.js",
   "scripts": {
+    "test": "node scripts/run_tests.js",
     "dev": "cd server && npm run dev",
     "build": "cd server && npm run build",
     "start": "cd server && npm run start",

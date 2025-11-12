@@ -15,6 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }){
             <Link href="/" className="font-extrabold text-2xl">LoL Champions</Link>
             <nav className="space-x-6">
               <Link href="/champions" className="text-sm">Champions</Link>
+              <Link href="/gtc" className="text-sm">GtC</Link>
               <Link href="/worlds" className="text-sm">Worlds 2025</Link>
               <Link href="/about" className="text-sm">About</Link>
             </nav>
