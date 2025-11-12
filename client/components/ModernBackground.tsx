@@ -75,17 +75,15 @@ export default function ModernBackground() {
         float d = length(p);
         float mask = smoothstep(0.9, 0.25, d);
 
-        vec3 base = mix(vec3(0.02, 0.02, 0.035), uPrimary, smoothstep(0.05, 0.8, f));
+    // smooth the fbm to avoid sharp spikes/pellets
+    float fsm = smoothstep(0.15, 0.85, f);
+    vec3 base = mix(vec3(0.02, 0.02, 0.035), uPrimary, fsm);
 
-        // subtle stars / sheds
-        float stars = step(0.995, fract(f * 10.0 + t * 0.1 + noise(p * 10.0)));
-        vec3 starCol = vec3(1.0);
+    // compose base color and mask (no pellets)
+    vec3 color = mix(base * 0.6, base, smoothstep(0.0, 1.0, mask));
 
-        vec3 color = mix(base * 0.6, base, mask);
-        color += starCol * stars * 0.9;
-
-        // color grading
-        color = pow(color, vec3(0.95));
+    // gentle color grading
+    color = pow(color, vec3(0.98));
 
         gl_FragColor = vec4(color, 1.0);
       }
