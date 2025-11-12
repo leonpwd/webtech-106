@@ -1,0 +1,265 @@
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import getSupabase from '@/lib/supabaseClient';
+
+export default function Dashboard() {
+  const [user, setUser] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [icon, setIcon] = useState('');
+  const [champions, setChampions] = useState<any[]>([]);
+  const [version, setVersion] = useState('13.24.1');
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [color, setColor] = useState<string>('#3b82f6');
+  const [updating, setUpdating] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = getSupabase();
+    if (!supabase) return;
+
+    // Fetch user data
+    supabase.auth.getUser().then((res) => {
+      const currentUser = res.data.user;
+      setUser(currentUser);
+      setEmail(currentUser?.email || '');
+      setName(currentUser?.user_metadata?.name || '');
+      setIcon(currentUser?.user_metadata?.icon || '');
+      setColor(currentUser?.user_metadata?.color || '#3b82f6');
+      setLoading(false);
+    });
+
+    // Fetch champions data
+    fetch('https://ddragon.leagueoflegends.com/api/versions.json')
+      .then(res => res.json())
+      .then(versions => {
+        const latestVersion = versions[0];
+        setVersion(latestVersion);
+        return fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
+      })
+      .then(res => res.json())
+      .then(data => {
+        const champList = Object.values(data.data);
+        setChampions(champList);
+      })
+      .catch(err => console.error('Error fetching champions:', err));
+  }, []);
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setMessage(null);
+
+    const supabase = getSupabase();
+    if (!supabase) {
+      setError('Supabase not configured.');
+      return;
+    }
+
+    setUpdating(true);
+    const updatePayload: any = {};
+    if (email !== user?.email) updatePayload.email = email;
+    if (password) updatePayload.password = password;
+    if (name !== user?.user_metadata?.name || icon !== user?.user_metadata?.icon || color !== user?.user_metadata?.color) {
+      updatePayload.data = { ...(user?.user_metadata || {}), name, icon };
+      if (color) updatePayload.data.color = color;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.updateUser(updatePayload);
+      if (error) {
+        setError(error.message);
+      } else {
+        setMessage('Profile updated successfully.');
+        setUser(data.user);
+        setPassword('');
+      }
+    } catch (err: any) {
+      setError(err.message || String(err));
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  // helper: convert #rrggbb to 'h s% l%'
+  function hexToHslString(hex: string) {
+    if (!hex) return '';
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16) / 255;
+    const g = parseInt(h.substring(2, 4), 16) / 255;
+    const b = parseInt(h.substring(4, 6), 16) / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let hDeg = 0, s = 0, l = (max + min) / 2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: hDeg = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: hDeg = (b - r) / d + 2; break;
+        case b: hDeg = (r - g) / d + 4; break;
+      }
+      hDeg = Math.round(hDeg * 60);
+    }
+    return `${hDeg} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+  }
+
+  // apply color to document root when changed
+  useEffect(() => {
+    if (!color) return;
+    try {
+      const hsl = hexToHslString(color);
+      if (hsl) {
+        document.documentElement.style.setProperty('--primary', hsl);
+        document.documentElement.style.setProperty('--accent', hsl);
+      }
+    } catch (err) {
+      // ignore
+    }
+  }, [color]);
+
+  const handleSignOut = async () => {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    await supabase.auth.signOut();
+    window.location.href = '/'; // Redirect to home after logout
+  };
+
+  if (loading) {
+    return <div className="text-center py-10">Loading...</div>;
+  }
+
+  if (!user) {
+    return <div className="text-center py-10">No user data available.</div>;
+  }
+
+  return (
+    <div className="h-full relative flex items-start gap-6 px-4 py-6 overflow-hidden">
+      <div className="bg-neutral-800 p-6 rounded-lg shadow-md min-w-64 w-[60vh] h-[80vh] overflow-hidden text-left">
+        <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+        <div className="flex items-center gap-4 mb-6">
+          <img
+            src={icon || '/default-icon.png'}
+            alt="User Icon"
+            className="w-16 h-16 rounded-full border border-neutral-700"
+          />
+          <div>
+            <h2 className="text-xl font-semibold">{user.user_metadata?.name || 'Unknown Name'}</h2>
+            <p className="text-sm text-neutral-400">{user.email}</p>
+          </div>
+        </div>
+        <form onSubmit={handleUpdate} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-400">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 block w-full rounded-sm border px-3 py-2 bg-neutral-700 text-white placeholder:text-neutral-400"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-400">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full rounded-sm border px-3 py-2 bg-neutral-700 text-white placeholder:text-neutral-400"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-400">New Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Leave blank to keep current password"
+              className="mt-1 block w-full rounded-sm border px-3 py-2 bg-neutral-700 text-white placeholder:text-neutral-400"
+            />
+          </div>
+          {error && <div className="text-sm text-red-500">{error}</div>}
+          {message && <div className="text-sm text-green-500">{message}</div>}
+          <button
+            type="submit"
+            disabled={updating}
+            className="px-4 py-2 bg-primary text-white rounded-sm hover:bg-primary/90 disabled:opacity-50"
+          >
+            {updating ? 'Updating...' : 'Update Profile'}
+          </button>
+        </form>
+
+        <div className="mt-8 flex gap-4">
+          <button
+            onClick={() => setShowIconPicker(!showIconPicker)}
+            className="px-4 py-2 w-[20vh] h-[8vh] bg-neutral-700 text-white rounded-sm hover:bg-neutral-600"
+          >
+            {showIconPicker ? 'Hide Icon Picker' : 'Choose Your Icon'}
+          </button>
+          <button
+            onClick={() => setShowColorPicker(!showColorPicker)}
+            className="px-4 py-2 bg-primary text-white rounded-sm hover:bg-primary/90"
+          >
+            Accent Color
+          </button>
+          <button
+            onClick={handleSignOut}
+            className="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {showIconPicker && (
+        <div className="bg-neutral-800 p-6 rounded-lg shadow-md max-w-md h-[80vh] transition-all duration-300 ease-out flex flex-col overflow-auto">
+          <h3 className="text-lg font-semibold mb-4">Choose Your Icon</h3>
+          <div className="grid grid-cols-4 gap-4 flex-1 overflow-y-auto">
+            {champions.map((champ: any) => (
+              <img
+                key={champ.id}
+                src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.image.full}`}
+                alt={champ.name}
+                className={`w-20 h-20 rounded-full cursor-pointer border-2 ${icon === `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.image.full}` ? 'border-primary' : 'border-neutral-600'} hover:border-neutral-400 transition-colors`}
+                onClick={() => setIcon(`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.image.full}`)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showColorPicker && (
+        <div className="bg-neutral-800 p-6 rounded-lg shadow-md max-w-sm transition-all duration-300 ease-out flex flex-col gap-4">
+          <h3 className="text-lg font-semibold">Accent Color</h3>
+          <div className="flex items-center gap-4">
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              aria-label="Accent color"
+              className="w-12 h-10 p-0 border rounded-sm"
+            />
+            <div className="text-sm text-neutral-300">Pick a color to update the site accent.</div>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'].map((c) => (
+              <button
+                key={c}
+                onClick={() => setColor(c)}
+                style={{ background: c }}
+                className="w-8 h-8 rounded-sm border-2 border-neutral-700"
+                aria-label={`preset ${c}`}
+              />
+            ))}
+          </div>
+          <div className="mt-2">
+            <button onClick={() => setShowColorPicker(false)} className="px-3 py-2 bg-neutral-700 text-white rounded-sm">Close</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

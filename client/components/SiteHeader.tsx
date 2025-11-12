@@ -5,6 +5,7 @@ import Link from "next/link"
 import getSupabase from "@/lib/supabaseClient"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { FaUserCircle } from 'react-icons/fa';
 
 export default function SiteHeader() {
   const [user, setUser] = useState<any | null>(null)
@@ -87,73 +88,34 @@ export default function SiteHeader() {
         <Link href="/" className="font-extrabold text-2xl">LoL Champions</Link>
 
         <div className="flex items-center gap-6">
-          <nav className="space-x-6 hidden sm:block">
+          <nav className="flex space-x-6">
             <Link href="/champions" className="text-sm">Champions</Link>
-            <Link href="/worlds" className="text-sm">Worlds 2025</Link>
-            <Link href="/about" className="text-sm">About</Link>
+            <Link href="/gtc" className="text-sm">GTC</Link>
+            {!user ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/auth/login"
+                  className="text-sm px-3 py-1 rounded-sm bg-transparent border border-neutral-700 hover:border-neutral-600"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="text-sm px-3 py-1 rounded-sm bg-primary text-white hover:bg-primary/90"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            ) : (
+              <Link
+                href="/dashboard"
+                className="text-sm px-3 py-1 rounded-sm bg-primary text-white hover:bg-primary/90 flex items-center gap-2"
+              >
+                <FaUserCircle size={20} />
+                Dashboard
+              </Link>
+            )}
           </nav>
-
-          {!user ? (
-            <div className="flex items-center gap-3">
-              <Link
-                href="/auth/login"
-                className="text-sm px-3 py-1 rounded-sm bg-transparent border border-neutral-700 hover:border-neutral-600"
-              >
-                Connexion
-              </Link>
-
-              <Link
-                href="/auth/register"
-                className="text-sm px-3 py-1 rounded-sm bg-primary text-white hover:bg-primary/90"
-              >
-                Inscription
-              </Link>
-            </div>
-          ) : (
-            <div className="relative">
-              <button
-                onClick={() => setOpen((s) => !s)}
-                className={cn(
-                  "text-sm px-3 py-1 rounded-sm bg-neutral-800 border border-neutral-700",
-                )}
-              >
-                {user.email || "Mon compte"}
-              </button>
-
-              {open && (
-                <div className="absolute right-0 mt-2 w-80 bg-neutral-900 border border-neutral-800 rounded-sm shadow-lg p-4 z-50">
-                  <h4 className="font-semibold mb-2">Tableau de bord</h4>
-                  <form onSubmit={handleUpdate} className="space-y-3">
-                    <div>
-                      <label className="block text-sm text-neutral-300">Email</label>
-                      <input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="mt-1 block w-full rounded-sm border px-3 py-2 bg-neutral-800 text-white placeholder:text-neutral-400"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-neutral-300">Nouveau mot de passe</label>
-                      <input
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="laisser vide pour ne pas changer"
-                        className="mt-1 block w-full rounded-sm border px-3 py-2 bg-neutral-800 text-white placeholder:text-neutral-400"
-                      />
-                    </div>
-
-                    {error && <div className="text-sm text-red-500">{error}</div>}
-                    {message && <div className="text-sm text-green-500">{message}</div>}
-
-                    <div className="flex items-center justify-between">
-                      <Button type="submit" disabled={loading}>{loading ? "Enregistrement…" : "Enregistrer"}</Button>
-                      <button type="button" onClick={handleSignOut} className="text-sm text-red-400">Se déconnecter</button>
-                    </div>
-                  </form>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </header>
