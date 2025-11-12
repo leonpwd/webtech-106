@@ -25,7 +25,12 @@ async function fetchChampions(){
       // Path: client/app/champions/page.tsx -> ../../public/data/champions.json
       const local = await import('../../public/data/champions.json')
       const rows = Array.isArray(local?.default ? local.default : local) ? (local?.default ?? local) : []
-      return rows.map((r:any) => ({ ...(r.data || {}), id: r.id, name: r.name || (r.data && r.data.name) }))
+      // rows may be raw ddragon champion objects or Supabase rows with .data
+      return rows.map((r:any) => {
+        const f:any = r
+        const payload = f.data ? f.data : f
+        return { ...payload, id: f.id ?? payload.id, name: f.name ?? payload.name }
+      })
     } catch (err) {
       throw new Error('Supabase is not configured and local champions JSON could not be loaded')
     }
