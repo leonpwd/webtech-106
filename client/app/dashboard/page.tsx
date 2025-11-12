@@ -117,6 +117,44 @@ export default function Dashboard() {
         document.documentElement.style.setProperty('--primary', hsl);
         document.documentElement.style.setProperty('--accent', hsl);
       }
+      // update browser theme color meta tags (default, light, dark)
+      try {
+        const darkenHex = (hex: string, factor = 0.75) => {
+          const h = hex.replace('#', '');
+          const r = Math.max(0, Math.min(255, Math.round(parseInt(h.substring(0, 2), 16) * factor)));
+          const g = Math.max(0, Math.min(255, Math.round(parseInt(h.substring(2, 4), 16) * factor)));
+          const b = Math.max(0, Math.min(255, Math.round(parseInt(h.substring(4, 6), 16) * factor)));
+          return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        };
+
+        let metaDefault = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+        if (!metaDefault) {
+          metaDefault = document.createElement('meta');
+          metaDefault.name = 'theme-color';
+          document.head.appendChild(metaDefault);
+        }
+        metaDefault.setAttribute('content', color);
+
+        let metaLight = document.querySelector('meta[name="theme-color"][media]') as HTMLMetaElement | null;
+        if (!metaLight) {
+          metaLight = document.createElement('meta');
+          metaLight.setAttribute('name', 'theme-color');
+          metaLight.setAttribute('media', '(prefers-color-scheme: light)');
+          document.head.appendChild(metaLight);
+        }
+        metaLight.setAttribute('content', color);
+
+        let metaDark = document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: dark)"]') as HTMLMetaElement | null;
+        if (!metaDark) {
+          metaDark = document.createElement('meta');
+          metaDark.setAttribute('name', 'theme-color');
+          metaDark.setAttribute('media', '(prefers-color-scheme: dark)');
+          document.head.appendChild(metaDark);
+        }
+        metaDark.setAttribute('content', darkenHex(color, 0.75));
+      } catch (err) {
+        // ignore
+      }
     } catch (err) {
       // ignore
     }
