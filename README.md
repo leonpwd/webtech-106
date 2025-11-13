@@ -4,12 +4,9 @@ A modern, animated Next.js web application showcasing an index of League of Lege
 
 ## 🌟 Live Demo
 
-**🚀 Production:** [https://webtech-106-delta.vercel.app/](https://webtech-106-delta.vercel.app/)
+**🚀 Production:** [https://riftforge-delta.vercel.app/](https://riftforge-delta.vercel.app/)
 
-** Work in Progress (big changes!):
-[webtech-106-dev.vercel.app](webtech-106-dev.vercel.app)
-
-**🔧 Local Development:** [http://localhost:8082](http://localhost:8082)
+**🔧 Local Development:** [http://localhost:3000](http://localhost:3000)
 
 ## ✨ Features
 
@@ -23,95 +20,82 @@ A modern, animated Next.js web application showcasing an index of League of Lege
 ### 📱 Pages & Functionality
 - **Home** (`/`) - Stunning animated landing page with hero section
 - **Champions** (`/champions`) - Index of League of Legends champions
-- **Quiz** (`/quiz`) - Interactive quiz about League of Legends champions
-- **About** (`/about`) - Platform information and mission
-- **Contacts** (`/contacts`) - Contact forms and information
+- **Guess The Champ** (`/gtc`) - Interactive quiz about League of Legends champions
+- **Dashboard** (`/dashboard`) - Profile management
 
-### 🛠️ Technical Excellence
-- **Next.js 15.5.5** with App Router for optimal performance
-- **React 19.2.0** with latest concurrent features
-- **TypeScript 5.6.3** for type safety and developer experience
-- **Tailwind CSS 3.4.18** for utility-first styling
-- **Server-side rendering** and static generation
-- **SEO optimized** with proper metadata
+## Key highlights implemented in this branch
 
-## 🚀 Quick Start
+- Modern responsive `SiteHeader` with search, theme toggle, avatar dropdown and mobile panel
+- Inline search suggestions (typeahead) powered by `public/data/champions.json` with keyboard navigation and direct links
+- Exact-match search redirect to a champion page when a query exactly matches an id/name/key
+- `ThemeManager` + runtime CSS variables for accent color and meta theme-color tags
+- Per-user theme persistence: toggling theme saves to Supabase user metadata (falls back to `localStorage`)
+- Dashboard (`/dashboard`) with icon picker and color picker; color presets and live preview
+- Animated WebGL background (`ModernBackground`) with light/dark-aware rendering and reduced artifacts
+- Champion index and detail pages with case-insensitive lookups and theme-aware cards
+
+## Tech stack
+
+- Next.js (App Router)
+- React 19+ (client and server components)
+- Tailwind CSS with CSS variable theming
+- Supabase for auth and user metadata (optional; app runs with local JSON fallback)
+
+## Local development
 
 ### Prerequisites
-- **Node.js 18+** (recommended: latest LTS)
-- **npm** or **yarn** package manager
-- Modern web browser (use brave or firefox folks)
 
-### Installation
+- Node.js 18+ (LTS recommended)
+- npm (or yarn)
 
-1. **Clone the repository**
+### Quick start
+
+1. Clone the repository
+
 ```bash
 git clone https://github.com/PingoLeon/webtech-106.git
-cd webtech-106/server
+cd webtech-106/client
 ```
 
-2. **Install dependencies**
+2. Install dependencies
+
 ```bash
-cd client
 npm install
 ```
 
-3. **Start development server**
-```bash
-npm run dev
-# Server starts at http://localhost:8082
+3. Optional: set environment variables for Supabase (if using persistence)
+
+Create a `.env.local` in `client/` with:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-4. **Build for production**
+If Supabase vars are not provided the app will fall back to `public/data/champions.json` for content and store theme in `localStorage`.
+
+4. Start the dev server
+
+```bash
+npm run dev
+# Opens at http://localhost:3000
+```
+
+5. Build for production
+
 ```bash
 npm run build
 npm start
 ```
 
-## 🎨 Styling & Animations
+## Contributing
 
-### Tailwind CSS Configuration
-- **Custom color system** with CSS variable integration
-- **Responsive breakpoints** for mobile-first design
-- **Dark mode support** with class-based toggling
-- **Custom animations** for enhanced user experience
+Fork, branch, and open a PR — see the existing codebase for patterns and Tailwind utility usage.
 
-### Animation Features
-- **Blob animations** with floating background elements
-- **Fade-in effects** with staggered timing
-- **Hover transformations** with scale and shadow effects
-- **Smooth transitions** throughout the interface
+## License & authors
 
+This project was built as part of a Web Technologies course and is intended for educational/demo use.
 
-## 🔧 Technology Stack
-
-### Core Framework
-- **Next.js 15.5.5** - React framework with App Router
-- **React 19.2.0** - UI library with concurrent features
-- **TypeScript 5.6.3** - Type-safe development
-
-### Styling & UI
-- **Tailwind CSS 3.4.18** - Utility-first CSS framework
-- **Lucide React 0.545.0** - Beautiful icon library
-- **Class Variance Authority** - Component variant management
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is part of the Web Technologies course (Fall 2025) and is intended for educational purposes.
-
-## 👥 Authors
-
-- **Léon Dalle** 
-- **Nirziin**
-
----
+Authors: Léon Dalle, Nirziin
 
 
