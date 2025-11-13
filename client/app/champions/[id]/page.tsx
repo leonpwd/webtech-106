@@ -8,7 +8,14 @@ async function fetchChampionById(id: string){
   try{
     const local = await import('../../../public/data/champions.json')
     const rows = Array.isArray(local?.default ? local.default : local) ? (local?.default ?? local) : []
-    const found = rows.find((r:any)=> r.id === id || r.name === id || (r.data && r.data.key === id))
+    const needle = (id || '').toString().toLowerCase().trim()
+    const found = rows.find((r:any)=> {
+      const f:any = r.data ? r.data : r
+      const rid = (r.id ?? '').toString().toLowerCase()
+      const rname = (f.name ?? '').toString().toLowerCase()
+      const rkey = ((f.key ?? '')).toString().toLowerCase()
+      return rid === needle || rname === needle || rkey === needle
+    })
     if(found) {
       // support both Supabase row format (with .data) and raw ddragon objects
       const f:any = found
@@ -59,9 +66,10 @@ export default async function ChampionPage(props:any){
   }
 
   return (
-    <main className="min-h-screen bg-black text-white" style={{ backgroundImage: splashUrl ? `url(${splashUrl})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <div className="backdrop-brightness-50 min-h-screen p-8">
-        <div className="max-w-3xl mx-auto bg-neutral-900/60 p-6 rounded">
+    <main className="min-h-screen relative bg-background text-foreground dark:bg-black dark:text-white" style={{ backgroundImage: splashUrl ? `url(${splashUrl})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      {/* brighten backdrop slightly in light mode, darken in dark mode for readability */}
+      <div className="min-h-screen p-8 backdrop-brightness-105 dark:backdrop-brightness-50">
+        <div className="max-w-3xl mx-auto bg-card/60 text-card-foreground p-6 rounded">
           <h1 className="text-4xl font-bold mb-2">{champ.name}</h1>
           <p className="mb-4">{champ.title || champ.biography || ''}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

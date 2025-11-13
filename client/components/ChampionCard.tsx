@@ -25,16 +25,16 @@ export default function ChampionCard({ champion }:{ champion:any }){
   }
   const lane = LANE_OVERRIDES[champion.id] || TAG_TO_LANE[primaryTag] || '—'
   return (
-    <Link href={`/champions/${encodeURIComponent(champion.id)}`} className="block p-4 border border-neutral-800 rounded-md hover:shadow-lg bg-neutral-800/40">
+    <Link href={`/champions/${encodeURIComponent(champion.id)}`} className="block p-4 border rounded-md hover:shadow-lg bg-card/60 border-border transition">
       <div className="flex items-center gap-4">
         <img src={imageUrl} alt={champion.name} width={64} height={64} className="rounded" />
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold">{champion.name}</div>
+            <div className="text-lg font-semibold text-card-foreground">{champion.name}</div>
           </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {(champion.tags || []).map((t:any)=> (
-                <span key={t} className="text-xs bg-neutral-800/60 px-2 py-1 rounded-full">{t}</span>
+                <span key={t} className="text-xs bg-muted/40 text-muted-foreground px-2 py-1 rounded-full">{t}</span>
               ))}
             </div>
         </div>
