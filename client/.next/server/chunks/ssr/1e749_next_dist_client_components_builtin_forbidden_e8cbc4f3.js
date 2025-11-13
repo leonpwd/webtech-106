@@ -1,32 +1,3 @@
-module.exports = [
-"[project]/client/node_modules/next/dist/client/components/builtin/forbidden.js [app-rsc] (ecmascript)", ((__turbopack_context__, module, exports) => {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-Object.defineProperty(exports, "default", {
-    enumerable: true,
-    get: function() {
-        return Forbidden;
-    }
-});
-const _jsxruntime = __turbopack_context__.r("[project]/client/node_modules/next/dist/server/route-modules/app-page/vendored/rsc/react-jsx-runtime.js [app-rsc] (ecmascript)");
-const _errorfallback = __turbopack_context__.r("[project]/client/node_modules/next/dist/client/components/http-access-fallback/error-fallback.js [app-rsc] (ecmascript)");
-function Forbidden() {
-    return /*#__PURE__*/ (0, _jsxruntime.jsx)(_errorfallback.HTTPAccessErrorFallback, {
-        status: 403,
-        message: "This page could not be accessed."
-    });
-}
-if ((typeof exports.default === 'function' || typeof exports.default === 'object' && exports.default !== null) && typeof exports.default.__esModule === 'undefined') {
-    Object.defineProperty(exports.default, '__esModule', {
-        value: true
-    });
-    Object.assign(exports.default, exports);
-    module.exports = exports.default;
-} //# sourceMappingURL=forbidden.js.map
-}),
-];
+module.exports=[64589,(a,b,c)=>{"use strict";Object.defineProperty(c,"__esModule",{value:!0}),Object.defineProperty(c,"default",{enumerable:!0,get:function(){return f}});let d=a.r(39100),e=a.r(75162);function f(){return(0,d.jsx)(e.HTTPAccessErrorFallback,{status:403,message:"This page could not be accessed."})}("function"==typeof c.default||"object"==typeof c.default&&null!==c.default)&&void 0===c.default.__esModule&&(Object.defineProperty(c.default,"__esModule",{value:!0}),Object.assign(c.default,c),b.exports=c.default)}];
 
 //# sourceMappingURL=1e749_next_dist_client_components_builtin_forbidden_e8cbc4f3.js.map
