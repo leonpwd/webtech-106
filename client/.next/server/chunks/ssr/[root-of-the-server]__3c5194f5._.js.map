@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 40, "column": 0}, "map": {"version":3,"sources":["file:///home/nirziin/webtech-106/client/lib/supabaseClient.ts"],"sourcesContent":["import { createClient } from '@supabase/supabase-js'\n\n// Synchronous factory that returns a Supabase client or null if env isn't set.\n// Keep this file inside `client/` so the Next.js build resolves dependencies from\n// `client/node_modules` (avoids cross-package resolution issues during Vercel builds).\nexport default function getSupabase() {\n  const url =\n    process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''\n  const key =\n    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||\n    process.env.SUPABASE_ANON_KEY ||\n    process.env.SUPABASE_SERVICE_KEY ||\n    ''\n\n  if (!url || !key) return null\n  return createClient(url, key)\n}\n"],"names":[],"mappings":";;;;AAAA;;AAKe,SAAS;IACtB,MAAM,MACJ,QAAQ,GAAG,CAAC,wBAAwB,IAAI,QAAQ,GAAG,CAAC,YAAY,IAAI;IACtE,MAAM,MACJ,QAAQ,GAAG,CAAC,6BAA6B,IACzC,QAAQ,GAAG,CAAC,iBAAiB,IAC7B,QAAQ,GAAG,CAAC,oBAAoB,IAChC;IAEF,IAAI,CAAC,OAAO,CAAC,KAAK,OAAO;IACzB,OAAO,IAAA,iNAAY,EAAC,KAAK;AAC3B","debugId":null}}]
+}

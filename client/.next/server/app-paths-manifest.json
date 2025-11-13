@@ -1,0 +1,6 @@
+{
+  "/champions/[id]/page": "app/champions/[id]/page.js",
+  "/champions/page": "app/champions/page.js",
+  "/gtc/page": "app/gtc/page.js",
+  "/page": "app/page.js"
+}
