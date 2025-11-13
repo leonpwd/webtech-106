@@ -71,25 +71,14 @@ export default async function ChampionPage(props:any){
       <div className="min-h-screen p-8 backdrop-brightness-105 dark:backdrop-brightness-50">
         <div className="max-w-3xl mx-auto bg-card/60 text-card-foreground p-6 rounded">
           <h1 className="text-4xl font-bold mb-2">{champ.name}</h1>
-          <p className="mb-4">{champ.title || champ.biography || ''}</p>
+          <p className="mb-4 text-lg text-neutral-300">{champ.title || ''}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h3 className="font-semibold">Tags & Meta</h3>
+                <h3 className="font-semibold">Role</h3>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {(champ.tags || []).map((t:string)=> (
-                    <div key={t} className="px-2 py-1 bg-neutral-800/40 rounded text-sm">{t}</div>
+                    <div key={t} className="px-3 py-1 bg-blue-900/60 rounded text-sm font-semibold">{t}</div>
                   ))}
-                  {/* show individual meta badges (genre, species, resource, region, year) */}
-                  {champMeta && (
-                    <>
-                      <div className="px-2 py-1 bg-neutral-800/40 rounded text-sm">Genre: {champMeta.genre}</div>
-                      <div className="px-2 py-1 bg-neutral-800/40 rounded text-sm">Espèce: {champMeta.species}</div>
-                      <div className="px-2 py-1 bg-neutral-800/40 rounded text-sm">Ressource: {champMeta.resource}</div>
-                      <div className="px-2 py-1 bg-neutral-800/40 rounded text-sm">Portée: {champMeta.range_type}</div>
-                      <div className="px-2 py-1 bg-neutral-800/40 rounded text-sm">Région: {champMeta.region}</div>
-                      <div className="px-2 py-1 bg-neutral-800/40 rounded text-sm">Sortie: {champMeta.release_year}</div>
-                    </>
-                  )}
                 </div>
               </div>
             <div>
@@ -102,21 +91,7 @@ export default async function ChampionPage(props:any){
 
           {champFull && (
             <div className="mt-6">
-              <h3 className="text-2xl font-semibold mb-2">Abilities</h3>
-              {/* Show each ability as its own icon button (not grouped) */}
-              <div className="flex items-center gap-3 mb-4">
-                {champFull.passive && (
-                  <div className="p-1 bg-neutral-800 rounded">
-                    <img src={`https://ddragon.leagueoflegends.com/cdn/${champFull.version || champ.version || DDRAGON_PUBLIC_VERSION}/img/passive/${champFull.passive.image?.full}`} alt={champFull.passive.name} width={48} height={48} />
-                  </div>
-                )}
-                {champFull.spells && champFull.spells.map((s:any, i:number)=> (
-                  <div key={i} className="p-1 bg-neutral-800 rounded">
-                    <img src={`https://ddragon.leagueoflegends.com/cdn/${champFull.version || champ.version || DDRAGON_PUBLIC_VERSION}/img/spell/${s.image?.full}`} alt={s.name} width={48} height={48} />
-                  </div>
-                ))}
-              </div>
-
+              <h3 className="text-2xl font-semibold mb-4">Abilities</h3>
               <ChampionAbilities passive={champFull.passive} spells={champFull.spells} version={champFull.version || champ.version || DDRAGON_PUBLIC_VERSION} />
             </div>
           )}
