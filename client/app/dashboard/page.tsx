@@ -176,8 +176,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="h-full relative flex items-start gap-6 px-4 py-6 overflow-hidden">
-      <div className="bg-card/60 text-card-foreground border border-border p-6 rounded-lg shadow-md min-w-64 w-[60vh] h-[80vh] overflow-hidden text-left">
+    <div className="h-full relative flex flex-col md:flex-row items-start gap-6 px-4 py-6 overflow-hidden">
+      <div className="bg-card/60 text-card-foreground border border-border p-6 rounded-lg shadow-md min-w-64 w-full md:w-[60vh] h-[80vh] overflow-hidden text-left">
         <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
         <div className="flex items-center gap-4 mb-6">
           <img
@@ -253,7 +253,7 @@ export default function Dashboard() {
       </div>
 
       {showIconPicker && (
-        <div className="bg-card/60 text-card-foreground p-6 rounded-lg shadow-md max-w-md h-[80vh] transition-all duration-300 ease-out flex flex-col overflow-auto border border-border">
+        <div className="bg-card/60 text-card-foreground p-6 rounded-lg shadow-md w-full md:max-w-md h-[80vh] transition-all duration-300 ease-out flex flex-col overflow-auto border border-border">
           <h3 className="text-lg font-semibold mb-4">Choose Your Icon</h3>
           <div className="grid grid-cols-4 gap-4 flex-1 overflow-y-auto">
             {champions.map((champ: any) => (
@@ -270,7 +270,7 @@ export default function Dashboard() {
       )}
 
       {showColorPicker && (
-        <div className="bg-card/60 text-card-foreground p-6 rounded-lg shadow-md max-w-sm transition-all duration-300 ease-out flex flex-col gap-4 border border-border">
+        <div className="bg-card/60 text-card-foreground p-6 rounded-lg shadow-md w-full md:max-w-sm transition-all duration-300 ease-out flex flex-col gap-4 border border-border">
           <h3 className="text-lg font-semibold">Accent Color</h3>
           <div className="flex items-center gap-4">
             <input

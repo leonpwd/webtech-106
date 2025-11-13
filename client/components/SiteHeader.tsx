@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useRef } from "react"
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import Link from "next/link"
 import getSupabase from "@/lib/supabaseClient"
@@ -22,77 +23,34 @@ export default function SiteHeader() {
   const championsRef = useRef<any[] | null>(null)
 
   // close dropdown when clicking outside or pressing Escape
-  useEffect(() => {
-    function onDocClick(e: MouseEvent | TouchEvent) {
-      if (!dropdownRef.current) return
-      const target = e.target as Node
-      if (dropdownOpen && !dropdownRef.current.contains(target)) {
-        setDropdownOpen(false)
-      }
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setDropdownOpen(false)
-    }
-    document.addEventListener('mousedown', onDocClick)
-    document.addEventListener('touchstart', onDocClick)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('mousedown', onDocClick)
-      document.removeEventListener('touchstart', onDocClick)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [dropdownOpen])
-
-  // click outside search suggestions to close
-  useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      const t = e.target as Node
-      if (showSuggestions && searchRef.current && !searchRef.current.contains(t)) {
-        setShowSuggestions(false)
-        setSelectedIndex(-1)
-      }
-    }
-    document.addEventListener('mousedown', onDocClick)
-    return () => document.removeEventListener('mousedown', onDocClick)
-  }, [showSuggestions])
-
-  async function handleSearchSubmit(e: React.FormEvent) {
+  
+  // handle search form submission: try an exact-match redirect first, otherwise go to search results
+  function handleSearchSubmit(e: React.FormEvent) {
     e.preventDefault()
     const q = query.trim()
-    if (!q) {
-      router.push('/champions')
-      return
-    }
+    if (!q) return
 
-    // Try to find an exact champion match locally (case-insensitive). If found, redirect to the champion page.
     try {
-      const res = await fetch('/data/champions.json')
-      if (res.ok) {
-        const json = await res.json()
-        const rows = Array.isArray(json?.default ? json.default : json) ? (json?.default ?? json) : json
+      const list = championsRef.current ?? []
+      const found = list.find((c:any) => {
         const needle = q.toLowerCase()
-        const found = rows.find((r:any) => {
-          const f:any = r.data ? r.data : r
-          const rid = (r.id ?? '').toString().toLowerCase()
-          const rname = (f.name ?? '').toString().toLowerCase()
-          const rkey = (f.key ?? '').toString().toLowerCase()
-          return rid === needle || rname === needle || rkey === needle
-        })
-        if (found) {
-          const foundId = found.id ?? (found.data && (found.data.id || found.data.name)) ?? (found.name || '')
-          if (foundId) {
-            router.push(`/champions/${encodeURIComponent(foundId)}`)
-            return
-          }
+        return c.id?.toString().toLowerCase() === needle || c.name?.toLowerCase() === needle || (c.key || '').toString().toLowerCase() === needle
+      })
+      if (found) {
+        const foundId = found.id ?? (found.data && (found.data.id || found.data.name)) ?? (found.name || '')
+        if (foundId) {
+          router.push(`/champions/${encodeURIComponent(foundId)}`)
+          return
         }
       }
     } catch (err) {
-      // ignore and fallback to search results
+      // ignore and fallback
     }
 
-    // fallback: go to search results page
+    // fallback to search results
     router.push(`/champions?q=${encodeURIComponent(q)}`)
   }
+  
 
   // load champion list once for inline suggestions
   useEffect(() => {
@@ -298,7 +256,7 @@ export default function SiteHeader() {
 
             {/* auth / avatar */}
             {user ? (
-              <div className="relative" ref={dropdownRef}>
+              <div className="hidden md:block relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(d => !d)}
                   className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-white/8 hover:ring-primary/50 transition"
@@ -333,42 +291,58 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      {/* mobile panel */}
-      {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black/50" onClick={() => setMobileOpen(false)}>
-          <div className="absolute right-0 top-0 w-72 h-full bg-gradient-to-b from-black/60 to-black/75 backdrop-blur p-6" onClick={(e) => e.stopPropagation()}>
+      {/* mobile panel (rendered via portal to avoid clipping by header/ancestors) */}
+      {typeof document !== 'undefined' && mobileOpen && createPortal(
+        <div className="fixed inset-0 z-50 bg-black/70" onClick={() => setMobileOpen(false)}>
+          <div
+            className="fixed right-0 top-0 w-80 max-w-full h-full bg-card/95 text-card-foreground border-l border-border backdrop-blur-lg p-6 overflow-y-auto text-foreground dark:text-white"
+            style={{ color: 'hsl(var(--foreground))' }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Main menu"
+          >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-md bg-gradient-to-br from-primary to-accent" />
                 <div>
                   <div className="font-bold">RiftForge</div>
-                  <div className="text-xs text-neutral-400">LoL Tools &amp; Builds</div>
+                  <div className="text-xs text-muted-foreground">LoL Tools &amp; Builds</div>
                 </div>
               </div>
-              <button onClick={() => setMobileOpen(false)}><FaTimes /></button>
+              <button onClick={() => setMobileOpen(false)} className="p-2 rounded-md hover:bg-muted/30" aria-label="Close menu"><FaTimes /></button>
             </div>
 
-            <nav className="flex flex-col gap-3">
-              <Link href="/champions" className="px-3 py-2 rounded hover:bg-white/4">Champions</Link>
-              <Link href="/gtc" className="px-3 py-2 rounded hover:bg-white/4">GTC</Link>
-              <Link href="/forum" className="px-3 py-2 rounded hover:bg-white/4">Forum</Link>
+            <nav aria-label="Mobile main navigation">
+              <ul className="mt-4 space-y-2">
+                <li>
+                  <Link href="/champions" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded hover:bg-white/4">Champions</Link>
+                </li>
+                <li>
+                  <Link href="/gtc" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded hover:bg-white/4">GTC</Link>
+                </li>
+                <li>
+                  <Link href="/forum" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded hover:bg-white/4">Forum</Link>
+                </li>
+              </ul>
             </nav>
 
-            <div className="mt-6">
+            <div className="mt-6 pt-4">
               {user ? (
                 <>
-                  <Link href="/dashboard" className="block px-3 py-2 rounded bg-primary text-white mb-2">Dashboard</Link>
-                  <button onClick={handleSignOut} className="w-full text-left px-3 py-2 rounded border border-white/6">Sign out</button>
+                  <Link href="/dashboard" className="block w-full px-4 py-3 rounded bg-primary text-primary-foreground mb-3 text-center touch-manipulation" onClick={() => setMobileOpen(false)}>Dashboard</Link>
+                  <button onClick={() => { handleSignOut(); setMobileOpen(false); }} className="w-full text-left px-4 py-3 rounded border border-border touch-manipulation">Sign out</button>
                 </>
               ) : (
                 <>
-                  <Link href="/auth/login" className="block px-3 py-2 rounded border border-white/6 mb-2">Login</Link>
-                  <Link href="/auth/register" className="block px-3 py-2 rounded bg-primary text-white">Sign Up</Link>
+                  <Link href="/auth/login" className="block w-full px-4 py-3 rounded border border-border mb-3 text-center touch-manipulation" onClick={() => setMobileOpen(false)}>Login</Link>
+                  <Link href="/auth/register" className="block w-full px-4 py-3 rounded bg-primary text-primary-foreground text-center touch-manipulation" onClick={() => setMobileOpen(false)}>Sign Up</Link>
                 </>
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   )
