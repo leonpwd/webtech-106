@@ -174,8 +174,16 @@ export default function Dashboard() {
     if (colorPersistTimerRef.current) window.clearTimeout(colorPersistTimerRef.current)
 
     // schedule a debounced save
+    // set suppression so ThemeManager doesn't reapply older remote values while we save
+    try {
+      if (typeof window !== 'undefined') {
+        ;(window as any).__skipThemeApplyUntil = Date.now() + 2000
+      }
+    } catch (err) {}
+
     colorPersistTimerRef.current = window.setTimeout(async () => {
       try {
+        if (typeof window !== 'undefined') (window as any).__themeUpdateInFlight = true
         const supabase = getSupabase();
         const currentUser = userRef.current
         if (supabase && currentUser) {
@@ -190,6 +198,12 @@ export default function Dashboard() {
       } catch (err) {
         // ignore persistence errors
       } finally {
+        try {
+          if (typeof window !== 'undefined') {
+            (window as any).__themeUpdateInFlight = false
+            ;(window as any).__skipThemeApplyUntil = Date.now() + 200
+          }
+        } catch (e) {}
         colorPersistTimerRef.current = null
       }
     }, 700)

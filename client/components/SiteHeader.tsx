@@ -128,11 +128,20 @@ export default function SiteHeader() {
   const persistTimerRef = useRef<number | null>(null)
 
   function schedulePersistTheme(nextIsDark: boolean) {
+    // set a short suppression window so ThemeManager doesn't re-apply old values
+    try {
+      if (typeof window !== 'undefined') {
+        ;(window as any).__skipThemeApplyUntil = Date.now() + 2000
+        ;(window as any).__themeUpdateInFlight = false
+      }
+    } catch (err) {}
+
     // clear previous timer
     if (persistTimerRef.current) window.clearTimeout(persistTimerRef.current)
     // schedule new persist
     persistTimerRef.current = window.setTimeout(async () => {
       try {
+        if (typeof window !== 'undefined') (window as any).__themeUpdateInFlight = true
         const supabase = getSupabase()
         if (supabase && user) {
           await supabase.auth.updateUser({ data: { ...(user?.user_metadata || {}), theme: (nextIsDark ? 'dark' : 'light') } })
@@ -142,6 +151,13 @@ export default function SiteHeader() {
       } catch (err) {
         // ignore persistence errors
       } finally {
+        try {
+          if (typeof window !== 'undefined') {
+            (window as any).__themeUpdateInFlight = false
+            // keep a small grace window after persistence
+            ;(window as any).__skipThemeApplyUntil = Date.now() + 200
+          }
+        } catch (e) {}
         persistTimerRef.current = null
       }
     }, 700)

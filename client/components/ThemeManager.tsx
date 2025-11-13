@@ -70,20 +70,37 @@ export default function ThemeManager() {
       return;
     }
 
+    // helper: if a recent local change is in-flight, skip applying remote theme/color
+    function shouldSkipApply() {
+      try {
+        if (typeof window === 'undefined') return false
+        const inFlight = (window as any).__themeUpdateInFlight as boolean | undefined
+        if (inFlight) return true
+        const until = (window as any).__skipThemeApplyUntil as number | undefined
+        if (!until) return false
+        return Date.now() < until
+      } catch (err) {
+        return false
+      }
+    }
+
     // initial apply based on current user (if any)
     supabase.auth.getUser().then((res) => {
+      if (shouldSkipApply()) return
       const currentUser = res.data.user;
       const color = currentUser?.user_metadata?.color || null;
       const theme = currentUser?.user_metadata?.theme || null;
       applyThemeClass(theme);
       applyColor(color);
     }).catch(() => {
+      if (shouldSkipApply()) return
       applyThemeClass(null);
       applyColor(null);
     });
 
     // Listen for auth state changes so theme/color update when user signs in/out
     const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (shouldSkipApply()) return
       const user = session?.user || null;
       if (user) {
         const color = user.user_metadata?.color || null;
