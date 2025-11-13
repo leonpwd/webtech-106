@@ -11,9 +11,14 @@ export default function SiteHeader() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [query, setQuery] = useState("")
+  const [suggestions, setSuggestions] = useState<any[]>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
   const [isDark, setIsDark] = useState(false)
   const router = useRouter()
   const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const searchRef = useRef<HTMLDivElement | null>(null)
+  const championsRef = useRef<any[] | null>(null)
 
   // close dropdown when clicking outside or pressing Escape
   useEffect(() => {
@@ -36,6 +41,19 @@ export default function SiteHeader() {
       document.removeEventListener('keydown', onKey)
     }
   }, [dropdownOpen])
+
+  // click outside search suggestions to close
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      const t = e.target as Node
+      if (showSuggestions && searchRef.current && !searchRef.current.contains(t)) {
+        setShowSuggestions(false)
+        setSelectedIndex(-1)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [showSuggestions])
 
   async function handleSearchSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -73,6 +91,51 @@ export default function SiteHeader() {
 
     // fallback: go to search results page
     router.push(`/champions?q=${encodeURIComponent(q)}`)
+  }
+
+  // load champion list once for inline suggestions
+  useEffect(() => {
+    let mounted = true
+    fetch('/data/champions.json')
+      .then((r) => r.json())
+      .then((json) => {
+        if (!mounted) return
+        const rows = Array.isArray(json?.default ? json.default : json) ? (json?.default ?? json) : json
+        championsRef.current = rows.map((r:any) => ({
+          id: r.id ?? (r.data && (r.data.id || r.data.name)) ?? r.name,
+          name: (r.data ? r.data.name : r.name) || '',
+          key: (r.data ? r.data.key : r.key) || ''
+        }))
+      })
+      .catch(() => {
+        championsRef.current = []
+      })
+    return () => { mounted = false }
+  }, [])
+
+  // filter suggestions as user types
+  function updateSuggestions(q: string) {
+    const needle = q.trim().toLowerCase()
+    if (!needle) {
+      setSuggestions([])
+      setShowSuggestions(false)
+      setSelectedIndex(-1)
+      return
+    }
+    const list = (championsRef.current ?? []).filter((c:any) => {
+      return c.name.toLowerCase().includes(needle) || (c.id || '').toString().toLowerCase().includes(needle) || (c.key || '').toString().toLowerCase().includes(needle)
+    }).slice(0, 8)
+    setSuggestions(list)
+    setShowSuggestions(list.length > 0)
+    setSelectedIndex(-1)
+  }
+
+  function handleSuggestionSelect(item:any) {
+    const id = item.id
+    router.push(`/champions/${encodeURIComponent(id)}`)
+    setShowSuggestions(false)
+    setSelectedIndex(-1)
+    setQuery(item.name)
   }
 
   useEffect(() => {
@@ -144,13 +207,56 @@ export default function SiteHeader() {
             <div className="hidden md:flex items-center bg-white/5 dark:bg-black/25 rounded-lg px-3 py-1 gap-2 border border-white/6 dark:border-black/40">
               <FaSearch className="text-neutral-300" />
               <form onSubmit={handleSearchSubmit} className="flex items-center">
-                <input
-                  aria-label="Search champions"
-                  placeholder="Search champions..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="bg-transparent outline-none text-sm placeholder:text-neutral-400 w-44"
-                />
+                <div className="relative" ref={searchRef}>
+                  <input
+                    aria-label="Search champions"
+                    placeholder="Search champions..."
+                    value={query}
+                    onChange={(e) => { setQuery(e.target.value); updateSuggestions(e.target.value) }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault()
+                        if (suggestions.length > 0) setSelectedIndex(i => Math.min(i + 1, suggestions.length - 1))
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault()
+                        setSelectedIndex(i => Math.max(i - 1, 0))
+                      } else if (e.key === 'Enter') {
+                        if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+                          e.preventDefault()
+                          handleSuggestionSelect(suggestions[selectedIndex])
+                        }
+                        // otherwise normal submit will handle exact-match redirect
+                      } else if (e.key === 'Escape') {
+                        setShowSuggestions(false)
+                        setSelectedIndex(-1)
+                      }
+                    }}
+                    className="bg-transparent outline-none text-sm placeholder:text-neutral-400 w-44"
+                  />
+
+                  {showSuggestions && (
+                    <ul role="listbox" aria-label="Search suggestions" className="absolute left-0 mt-1 w-72 max-h-56 overflow-auto rounded-md border border-border bg-white/95 dark:bg-black/80 text-foreground dark:text-white shadow-lg z-50">
+                      {suggestions.map((s, idx) => (
+                        <li
+                          key={s.id + '-' + idx}
+                          role="option"
+                          aria-selected={selectedIndex === idx}
+                          onMouseEnter={() => setSelectedIndex(idx)}
+                          className={`px-0 py-0`}
+                        >
+                          <Link
+                            href={`/champions/${encodeURIComponent(s.id)}`}
+                            onClick={() => { setShowSuggestions(false); setSelectedIndex(-1); setQuery(s.name) }}
+                            className={`block px-3 py-2 cursor-pointer ${selectedIndex === idx ? 'bg-primary/10 dark:bg-primary/20' : 'hover:bg-white/6 dark:hover:bg-black/30'}`}
+                          >
+                            <div className="text-sm font-medium">{s.name}</div>
+                            <div className="text-xs text-muted-foreground">{s.id}</div>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </form>
             </div>
 
