@@ -28,38 +28,23 @@ export default function ThemeManager() {
   useEffect(() => {
     const supabase = getSupabase();
 
-    // If Supabase is available, prefer the user's saved theme; otherwise default to dark.
-    if (!supabase) {
-      try {
-        const html = document.documentElement;
-        if (!html.classList.contains('dark')) html.classList.add('dark');
-      } catch (err) {}
-      applyColor(null);
-      return
-    }
-
-    supabase.auth.getUser().then((res) => {
-      const currentUser = res.data.user;
-      const color = currentUser?.user_metadata?.color || null;
-      const theme = currentUser?.user_metadata?.theme || null;
-
-      // apply theme preference from user metadata if present
+    function applyThemeClass(theme: string | null) {
       try {
         const html = document.documentElement;
         if (theme === 'light') html.classList.remove('dark');
-        else html.classList.add('dark');
+        else if (theme === 'dark') html.classList.add('dark');
+        else {
+          // no explicit theme: prefer stored guest pref, then system, then dark
+          const stored = typeof window !== 'undefined' ? localStorage.getItem('rf_theme') : null;
+          if (stored === 'light') html.classList.remove('dark');
+          else if (stored === 'dark') html.classList.add('dark');
+          else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add('dark');
+          else html.classList.add('dark');
+        }
       } catch (err) {}
+    }
 
-      applyColor(color);
-    }).catch(() => {
-      // fallback default
-      try {
-        const html = document.documentElement;
-        if (!html.classList.contains('dark')) html.classList.add('dark');
-      } catch (err) {}
-      applyColor(null);
-    });
-
+    // apply color and meta; accepts null to set defaults
     function applyColor(hex: string | null) {
       try {
         if (hex) {
@@ -77,6 +62,44 @@ export default function ThemeManager() {
         // ignore
       }
     }
+
+    if (!supabase) {
+      // no supabase: apply guest/localStorage/system defaults
+      applyThemeClass(null);
+      applyColor(null);
+      return;
+    }
+
+    // initial apply based on current user (if any)
+    supabase.auth.getUser().then((res) => {
+      const currentUser = res.data.user;
+      const color = currentUser?.user_metadata?.color || null;
+      const theme = currentUser?.user_metadata?.theme || null;
+      applyThemeClass(theme);
+      applyColor(color);
+    }).catch(() => {
+      applyThemeClass(null);
+      applyColor(null);
+    });
+
+    // Listen for auth state changes so theme/color update when user signs in/out
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      const user = session?.user || null;
+      if (user) {
+        const color = user.user_metadata?.color || null;
+        const theme = user.user_metadata?.theme || null;
+        applyThemeClass(theme);
+        applyColor(color);
+      } else {
+        // signed out: fall back to guest preference (localStorage/system)
+        applyThemeClass(null);
+        applyColor(null);
+      }
+    });
+
+    return () => {
+      ;(listener as any)?.subscription?.unsubscribe?.();
+    };
 
     function darkenHex(hex: string, factor = 0.8) {
       const h = hex.replace('#', '');

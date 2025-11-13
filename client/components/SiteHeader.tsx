@@ -123,6 +123,43 @@ export default function SiteHeader() {
     else html.classList.remove('dark')
   }, [isDark])
 
+  // Persist theme preference (Supabase when logged in, localStorage when not).
+  // debounced persistence: schedule persistence after a short delay to avoid rapid updates
+  const persistTimerRef = useRef<number | null>(null)
+
+  function schedulePersistTheme(nextIsDark: boolean) {
+    // clear previous timer
+    if (persistTimerRef.current) window.clearTimeout(persistTimerRef.current)
+    // schedule new persist
+    persistTimerRef.current = window.setTimeout(async () => {
+      try {
+        const supabase = getSupabase()
+        if (supabase && user) {
+          await supabase.auth.updateUser({ data: { ...(user?.user_metadata || {}), theme: (nextIsDark ? 'dark' : 'light') } })
+        } else if (typeof window !== 'undefined') {
+          localStorage.setItem('rf_theme', nextIsDark ? 'dark' : 'light')
+        }
+      } catch (err) {
+        // ignore persistence errors
+      } finally {
+        persistTimerRef.current = null
+      }
+    }, 700)
+  }
+
+  function handleToggleTheme() {
+    const next = !isDark
+    // apply locally immediately for snappy UI
+    try {
+      const html = document.documentElement
+      if (next) html.classList.add('dark')
+      else html.classList.remove('dark')
+    } catch (err) {}
+    setIsDark(next)
+    // schedule persistence (debounced)
+    schedulePersistTheme(next)
+  }
+
   async function handleSignOut() {
     const supabase = getSupabase()
     if (!supabase) return
@@ -220,31 +257,7 @@ export default function SiteHeader() {
             </div>
 
             <button
-              onClick={async () => {
-                // toggle local state
-                setIsDark((prev) => {
-                  const next = !prev
-                  try {
-                    const html = document.documentElement
-                    if (next) html.classList.add('dark')
-                    else html.classList.remove('dark')
-                  } catch (err) {}
-                  return next
-                })
-                // persist preference to Supabase (and fallback to localStorage)
-                try {
-                  const supabase = getSupabase()
-                  if (supabase) {
-                    // update user metadata.theme
-                    await supabase.auth.updateUser({ data: { ...(user?.user_metadata || {}), theme: (document.documentElement.classList.contains('dark') ? 'dark' : 'light') } })
-                  } else {
-                    // fallback local storage
-                    if (typeof window !== 'undefined') localStorage.setItem('rf_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light')
-                  }
-                } catch (err) {
-                  // ignore persistence errors
-                }
-              }}
+              onClick={() => { void handleToggleTheme() }}
               className="p-2 rounded-md hover:bg-white/6 dark:hover:bg-black/40 transition"
               aria-label="Toggle theme"
               title="Toggle theme"

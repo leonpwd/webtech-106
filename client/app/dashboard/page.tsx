@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import getSupabase from '@/lib/supabaseClient';
 
 export default function Dashboard() {
@@ -157,6 +157,48 @@ export default function Dashboard() {
       }
     } catch (err) {
       // ignore
+    }
+  }, [color]);
+
+  // debounce persistence of color changes to avoid many updateUser calls
+  const colorPersistTimerRef = useRef<number | null>(null)
+  const userRef = useRef<any | null>(user)
+
+  // keep userRef up to date without causing the color effect to re-run
+  useEffect(() => {
+    userRef.current = user
+  }, [user])
+
+  useEffect(() => {
+    // clear any existing timer
+    if (colorPersistTimerRef.current) window.clearTimeout(colorPersistTimerRef.current)
+
+    // schedule a debounced save
+    colorPersistTimerRef.current = window.setTimeout(async () => {
+      try {
+        const supabase = getSupabase();
+        const currentUser = userRef.current
+        if (supabase && currentUser) {
+          const { data, error } = await supabase.auth.updateUser({ data: { ...(currentUser?.user_metadata || {}), color } });
+          if (!error && data?.user) {
+            // update local state with returned user (does not re-trigger this effect)
+            setUser(data.user)
+          }
+        } else if (typeof window !== 'undefined') {
+          localStorage.setItem('rf_color', color);
+        }
+      } catch (err) {
+        // ignore persistence errors
+      } finally {
+        colorPersistTimerRef.current = null
+      }
+    }, 700)
+
+    return () => {
+      if (colorPersistTimerRef.current) {
+        window.clearTimeout(colorPersistTimerRef.current)
+        colorPersistTimerRef.current = null
+      }
     }
   }, [color]);
 
