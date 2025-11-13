@@ -1,53 +1,117 @@
-# Webtech Labs - Team 106
+# League of Legends Champions Index & Quiz 🚀
 
-## Introduction
-This repository contains lab exercises for the Web Technologies course (Fall 2025).
+A modern, animated Next.js web application showcasing an index of League of Legends champions and an interactive quiz about these characters. Built with cutting-edge technologies and featuring a beautiful, responsive design.
 
-### Test it out !
-A hosted version is available at :
-- [https://webtech.leobob.duckdns.org](https://webtech.leobob.duckdns.org)
+## 🌟 Live Demo
 
+**🚀 Production:** [https://webtech-106-delta.vercel.app/](https://webtech-106-delta.vercel.app/)
 
-## Prerequisites
-- Node.js (v22 or higher recommended)
-- npm (Node Package Manager)
-- A modern web browser (e.g., Brave, Firefox)
-- Git (for version control)
+** Work in Progress (big changes!):
+[webtech-106-dev.vercel.app](webtech-106-dev.vercel.app)
 
-## Installation
-Clone the repository and install dependencies:
+**🔧 Local Development:** [http://localhost:8082](http://localhost:8082)
 
+## ✨ Features
+
+### 🎨 Modern Design
+- **Animated landing page** with floating background elements
+- **Gradient backgrounds** and smooth transitions
+- **Interactive hover effects** with scale transforms
+- **Dark/Light mode support** (class-based theming)
+- **Fully responsive** design for all devices
+
+### 📱 Pages & Functionality
+- **Home** (`/`) - Stunning animated landing page with hero section
+- **Champions** (`/champions`) - Index of League of Legends champions
+- **Quiz** (`/quiz`) - Interactive quiz about League of Legends champions
+- **About** (`/about`) - Platform information and mission
+- **Contacts** (`/contacts`) - Contact forms and information
+
+### 🛠️ Technical Excellence
+- **Next.js 15.5.5** with App Router for optimal performance
+- **React 19.2.0** with latest concurrent features
+- **TypeScript 5.6.3** for type safety and developer experience
+- **Tailwind CSS 3.4.18** for utility-first styling
+- **Server-side rendering** and static generation
+- **SEO optimized** with proper metadata
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js 18+** (recommended: latest LTS)
+- **npm** or **yarn** package manager
+- Modern web browser (use brave or firefox folks)
+
+### Installation
+
+1. **Clone the repository**
 ```bash
 git clone https://github.com/PingoLeon/webtech-106.git
-cd webtech-106
+cd webtech-106/server
+```
+
+2. **Install dependencies**
+```bash
+cd client
 npm install
-npm run install:labs
 ```
 
-## Usage
-
-### Start the landing page (index)
+3. **Start development server**
 ```bash
+npm run dev
+# Server starts at http://localhost:8082
+```
+
+4. **Build for production**
+```bash
+npm run build
 npm start
-# Opens http://localhost:3000 with links to all labs
 ```
 
-### Start all labs and landing page in parallel
-```bash
-npm run all
-# Starts landing page and all labs (e.g., lab1 on 8081, lab2 on 8082)
-```
+## 🎨 Styling & Animations
 
-#### Example: Try the /hello route in lab1
-Visit: [http://localhost:8081/hello?name=YourName](http://localhost:8081/hello?name=YourName)
+### Tailwind CSS Configuration
+- **Custom color system** with CSS variable integration
+- **Responsive breakpoints** for mobile-first design
+- **Dark mode support** with class-based toggling
+- **Custom animations** for enhanced user experience
 
-Each lab folder contains its own code and instructions if needed.
+### Animation Features
+- **Blob animations** with floating background elements
+- **Fade-in effects** with staggered timing
+- **Hover transformations** with scale and shadow effects
+- **Smooth transitions** throughout the interface
 
-## Contribute
-Contributions are welcome! Please fork the repository and submit a pull request.
 
-## Authors
-- Romain Barrière
-- Léon Dalle
+## 🔧 Technology Stack
+
+### Core Framework
+- **Next.js 15.5.5** - React framework with App Router
+- **React 19.2.0** - UI library with concurrent features
+- **TypeScript 5.6.3** - Type-safe development
+
+### Styling & UI
+- **Tailwind CSS 3.4.18** - Utility-first CSS framework
+- **Lucide React 0.545.0** - Beautiful icon library
+- **Class Variance Authority** - Component variant management
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is part of the Web Technologies course (Fall 2025) and is intended for educational purposes.
+
+## 👥 Authors
+
+- **Léon Dalle** 
+- **Nirziin**
+
+---
 
 
