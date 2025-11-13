@@ -14,7 +14,8 @@ export default function SiteHeader() {
   const [suggestions, setSuggestions] = useState<any[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const [isDark, setIsDark] = useState(false)
+  // default to dark to match the inline script and avoid hydration mismatches
+  const [isDark, setIsDark] = useState<boolean>(true)
   const router = useRouter()
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const searchRef = useRef<HTMLDivElement | null>(null)
@@ -261,12 +262,38 @@ export default function SiteHeader() {
             </div>
 
             <button
-              onClick={() => setIsDark(d => !d)}
+              onClick={async () => {
+                // toggle local state
+                setIsDark((prev) => {
+                  const next = !prev
+                  try {
+                    const html = document.documentElement
+                    if (next) html.classList.add('dark')
+                    else html.classList.remove('dark')
+                  } catch (err) {}
+                  return next
+                })
+                // persist preference to Supabase (and fallback to localStorage)
+                try {
+                  const supabase = getSupabase()
+                  if (supabase) {
+                    // update user metadata.theme
+                    await supabase.auth.updateUser({ data: { ...(user?.user_metadata || {}), theme: (document.documentElement.classList.contains('dark') ? 'dark' : 'light') } })
+                  } else {
+                    // fallback local storage
+                    if (typeof window !== 'undefined') localStorage.setItem('rf_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+                  }
+                } catch (err) {
+                  // ignore persistence errors
+                }
+              }}
               className="p-2 rounded-md hover:bg-white/6 dark:hover:bg-black/40 transition"
               aria-label="Toggle theme"
               title="Toggle theme"
             >
-              {isDark ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-neutral-300" />}
+              {/* Render both icons to avoid changing DOM structure between server and client */}
+              <FaSun className="hidden dark:inline text-yellow-400" />
+              <FaMoon className="inline dark:hidden text-neutral-300" />
             </button>
 
             {/* auth / avatar */}
@@ -287,7 +314,6 @@ export default function SiteHeader() {
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white/95 text-foreground dark:bg-black/30 dark:text-white border border-border dark:border-black/40 rounded-lg shadow-lg backdrop-blur-sm p-2">
                     <Link href="/dashboard" className="block px-3 py-2 text-sm hover:bg-white/4 rounded">Dashboard</Link>
-                    <Link href="/profile" className="block px-3 py-2 text-sm hover:bg-white/4 rounded">Profile</Link>
                     <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm hover:bg-rose-600/20 rounded">Sign out</button>
                   </div>
                 )}

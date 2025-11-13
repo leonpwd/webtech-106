@@ -27,13 +27,36 @@ function hexToHslString(hex: string) {
 export default function ThemeManager() {
   useEffect(() => {
     const supabase = getSupabase();
-    if (!supabase) return;
+
+    // If Supabase is available, prefer the user's saved theme; otherwise default to dark.
+    if (!supabase) {
+      try {
+        const html = document.documentElement;
+        if (!html.classList.contains('dark')) html.classList.add('dark');
+      } catch (err) {}
+      applyColor(null);
+      return
+    }
 
     supabase.auth.getUser().then((res) => {
       const currentUser = res.data.user;
       const color = currentUser?.user_metadata?.color || null;
+      const theme = currentUser?.user_metadata?.theme || null;
+
+      // apply theme preference from user metadata if present
+      try {
+        const html = document.documentElement;
+        if (theme === 'light') html.classList.remove('dark');
+        else html.classList.add('dark');
+      } catch (err) {}
+
       applyColor(color);
     }).catch(() => {
+      // fallback default
+      try {
+        const html = document.documentElement;
+        if (!html.classList.contains('dark')) html.classList.add('dark');
+      } catch (err) {}
       applyColor(null);
     });
 
