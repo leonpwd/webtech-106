@@ -272,7 +272,10 @@ export default function Dashboard() {
         setError('No active session found. Please sign in again before deleting your account.');
         return;
       }
-      const accessToken = session.access_token || session?.accessToken || null;
+      // Supabase session uses `access_token` (snake_case). Older code paths or other SDKs
+      // may expose `accessToken` (camelCase). Use a safe access with an any-cast
+      // to satisfy TypeScript and support both shapes.
+      const accessToken = (session as any)?.access_token || (session as any)?.accessToken || null;
       if (!accessToken) {
         setError('No session token available. Please sign in again.');
         return;
