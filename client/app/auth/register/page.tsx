@@ -66,7 +66,13 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      const redirectTo = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
+      // Compute redirect target and normalize to include a scheme if missing.
+      const rawRedirect = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
+      let redirectTo = rawRedirect || ''
+      if (redirectTo && !/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(redirectTo)) {
+        if (!/^localhost(:|$)/.test(redirectTo)) redirectTo = `https://${redirectTo}`
+      }
+      if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') console.log('OAuth redirectTo:', redirectTo)
       const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } })
       if (oauthError) setError(oauthError.message)
       // Supabase handles redirect

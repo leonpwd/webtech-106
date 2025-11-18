@@ -59,7 +59,14 @@ export default function LoginPage() {
 
     setLoading(true)
     try {
-      const redirectTo = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
+      // Compute redirect target and normalize to include a scheme if missing.
+      const rawRedirect = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
+      let redirectTo = rawRedirect || ''
+      if (redirectTo && !/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(redirectTo)) {
+        // If no scheme, assume https for non-localhost hosts
+        if (!/^localhost(:|$)/.test(redirectTo)) redirectTo = `https://${redirectTo}`
+      }
+      if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') console.log('OAuth redirectTo:', redirectTo)
       const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo } })
       if (oauthError) setError(oauthError.message)
       // Supabase will redirect the user to the provider's consent page
@@ -80,8 +87,14 @@ export default function LoginPage() {
 
     setLoading(true)
     try {
-      const redirectTo = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo } })
+      // Compute redirect target and normalize to include a scheme if missing.
+      const rawRedirect2 = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
+      let redirectTo2 = rawRedirect2 || ''
+      if (redirectTo2 && !/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(redirectTo2)) {
+        if (!/^localhost(:|$)/.test(redirectTo2)) redirectTo2 = `https://${redirectTo2}`
+      }
+      if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') console.log('OAuth redirectTo:', redirectTo2)
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: redirectTo2 } })
       if (oauthError) setError(oauthError.message)
     } catch (err: any) {
       setError(err?.message || String(err))
