@@ -59,7 +59,8 @@ export default function LoginPage() {
 
     setLoading(true)
     try {
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'github' })
+      const redirectTo = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo } })
       if (oauthError) setError(oauthError.message)
       // Supabase will redirect the user to the provider's consent page
     } catch (err: any) {
@@ -79,7 +80,8 @@ export default function LoginPage() {
 
     setLoading(true)
     try {
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'discord' })
+      const redirectTo = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo } })
       if (oauthError) setError(oauthError.message)
     } catch (err: any) {
       setError(err?.message || String(err))

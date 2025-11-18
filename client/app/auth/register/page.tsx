@@ -66,7 +66,8 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider })
+      const redirectTo = (process.env.NEXT_PUBLIC_APP_URL as string) || (typeof window !== 'undefined' ? window.location.origin : '')
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } })
       if (oauthError) setError(oauthError.message)
       // Supabase handles redirect
     } catch (err: any) {
