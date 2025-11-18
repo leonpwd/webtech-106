@@ -12,12 +12,13 @@ export default function Dashboard() {
   const [icon, setIcon] = useState('');
   const [champions, setChampions] = useState<any[]>([]);
   const [version, setVersion] = useState('13.24.1');
-  const [showIconPicker, setShowIconPicker] = useState(false);
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showIconPicker, setShowIconPicker] = useState(true);
+  const [showColorPicker, setShowColorPicker] = useState(true);
   const [color, setColor] = useState<string>('#3b82f6');
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deletionEnabled, setDeletionEnabled] = useState<boolean | null>(null);
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -48,6 +49,16 @@ export default function Dashboard() {
         setChampions(champList);
       })
       .catch(err => console.error('Error fetching champions:', err));
+
+    // Check if server supports account deletion (service role key configured)
+    fetch('/api/account/delete/status').then(async (res) => {
+      try {
+        const body = await res.json()
+        setDeletionEnabled(!!body.enabled)
+      } catch (err) {
+        setDeletionEnabled(false)
+      }
+    }).catch(() => setDeletionEnabled(false))
   }, []);
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -223,6 +234,63 @@ export default function Dashboard() {
     window.location.href = '/'; // Redirect to home after logout
   };
 
+  // Unlink a connected provider (e.g., discord)
+  const handleUnlink = async (identity: any) => {
+    setError(null);
+    setMessage(null);
+    const supabase = getSupabase();
+    if (!supabase) {
+      setError('Supabase not configured.');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.unlinkIdentity(identity);
+      if (error) {
+        setError(error.message || 'Failed to unlink provider');
+        return;
+      }
+      // refresh user
+      const res = await supabase.auth.getUser();
+      setUser(res.data.user);
+      setMessage('Provider unlinked successfully.');
+    } catch (err: any) {
+      setError(err?.message || String(err));
+    }
+  };
+
+  // Request account deletion via server API (server will use service role key)
+  const handleDeleteAccount = async () => {
+    setError(null);
+    setMessage(null);
+    if (!confirm('Supprimer définitivement votre compte ? Cette action est irréversible.')) return;
+    try {
+      const supabase = getSupabase();
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      const session = sessionData?.session;
+      if (sessionError || !session) {
+        setError('No active session found. Please sign in again before deleting your account.');
+        return;
+      }
+      const accessToken = session.access_token || session?.accessToken || null;
+      if (!accessToken) {
+        setError('No session token available. Please sign in again.');
+        return;
+      }
+      const resp = await fetch('/api/account/delete', { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } });
+      if (!resp.ok) {
+        const body = await resp.json().catch(() => ({ error: 'Unknown error' }));
+        setError(body.error || 'Failed to delete account');
+        return;
+      }
+      // on success, sign out and redirect
+      await supabase?.auth.signOut();
+      window.location.href = '/';
+    } catch (err: any) {
+      setError(err?.message || String(err));
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
   }
@@ -233,7 +301,7 @@ export default function Dashboard() {
 
   return (
     <div className="h-full relative flex flex-col md:flex-row items-start gap-6 px-4 py-6 overflow-hidden">
-      <div className="bg-card/60 text-card-foreground border border-border p-6 rounded-lg shadow-md min-w-64 w-full md:w-[60vh] h-[80vh] overflow-hidden text-left">
+      <div className="bg-card/60 text-card-foreground border border-border p-6 rounded-lg shadow-md min-w-64 w-full md:w-[60vh] h-[80vh] overflow-auto text-left modern-scrollbar">
         <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
         <div className="flex items-center gap-4 mb-6">
           <img
@@ -286,32 +354,50 @@ export default function Dashboard() {
           </button>
         </form>
 
-        <div className="mt-8 flex gap-4">
-          <button
-            onClick={() => setShowIconPicker(!showIconPicker)}
-            className="px-4 py-2 w-[20vh] h-[8vh] bg-muted/40 text-foreground rounded-sm hover:bg-muted/30 border border-border"
-          >
-            {showIconPicker ? 'Hide Icon Picker' : 'Choose Your Icon'}
-          </button>
-          <button
-            onClick={() => setShowColorPicker(!showColorPicker)}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-primary/90"
-          >
-            Accent Color
-          </button>
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2">Connected Accounts</h3>
+          <div className="flex flex-col gap-2">
+            {(user?.identities && user.identities.length > 0) ? (
+              user.identities.map((id: any) => (
+                <div key={id.id || id.provider + id.provider_user_id} className="flex items-center justify-between bg-muted/20 p-2 rounded-sm border border-border">
+                  <div className="flex items-center gap-3">
+                    <div className="font-mono text-sm text-muted-foreground">{id.provider}</div>
+                    <div className="text-sm text-foreground">{id.provider_user_id ?? id.identity_id}</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-muted-foreground">No external providers linked.</div>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-8 flex gap-4 items-center">
           <button
             onClick={handleSignOut}
             className="px-4 py-2 bg-destructive text-destructive-foreground rounded-sm hover:bg-destructive/90"
           >
             Logout
           </button>
+          {deletionEnabled === null ? (
+            <div className="text-sm text-muted-foreground">Checking account deletion availability…</div>
+          ) : deletionEnabled === false ? (
+            <div className="text-sm text-muted-foreground">Account deletion is disabled on the server. Contact the site administrator to remove your account.</div>
+          ) : (
+            <button
+              onClick={handleDeleteAccount}
+              className="px-4 py-2 bg-red-700 text-white rounded-sm hover:brightness-90"
+            >
+              Delete Account
+            </button>
+          )}
         </div>
       </div>
 
       {showIconPicker && (
         <div className="bg-card/60 text-card-foreground p-6 rounded-lg shadow-md w-full md:max-w-md h-[80vh] transition-all duration-300 ease-out flex flex-col overflow-auto border border-border">
           <h3 className="text-lg font-semibold mb-4">Choose Your Icon</h3>
-          <div className="grid grid-cols-4 gap-4 flex-1 overflow-y-auto">
+          <div className="grid grid-cols-4 gap-4 flex-1 overflow-y-auto modern-scrollbar">
             {champions.map((champ: any) => (
               <img
                 key={champ.id}
