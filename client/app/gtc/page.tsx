@@ -26,11 +26,15 @@ export default function GtC(){
   useEffect(()=>{
     if(!query) return setCandidates([])
     const q = normalizeName(query)
-    const matches = champions.filter((c:any)=> normalizeName(c.name).startsWith(q)).slice(0,10)
+    // Exclude champions that have already been guessed in this session
+    const guessedIds = new Set(history.map(h=> h.guess?.id).filter(Boolean))
+    const matches = champions
+      .filter((c:any)=> normalizeName(c.name).startsWith(q) && !guessedIds.has(c.id))
+      .slice(0,10)
     setCandidates(matches)
-  },[query, champions])
+  },[query, champions, history])
 
-  function onSelect(c:any){ setQuery(c.name); setCandidates([]); submitGuess(c) }
+  function onSelect(c:any){ setQuery(''); setCandidates([]); submitGuess(c) }
 
   function submitGuess(c:any){
     setPicked(c)
@@ -61,7 +65,12 @@ export default function GtC(){
       <p className="mb-4 text-sm opacity-80">Type a champion name and try to guess the hidden champion.</p>
 
       <div className="mb-4">
-        <input className="w-full p-3 rounded bg-neutral-800/40" placeholder="Type champion name..." value={query} onChange={(e)=> setQuery(e.target.value)} />
+        <input
+          className="w-full p-3 rounded bg-neutral-800/40 disabled:opacity-60 disabled:cursor-not-allowed"
+          placeholder="Type champion name..."
+          value={query}
+          onChange={(e)=> setQuery(e.target.value)}
+        />
         {candidates.length > 0 && (
           <div className="mt-2 bg-neutral-800/50 rounded max-h-60 overflow-auto border border-neutral-700">
             {candidates.map(c=> (
@@ -97,42 +106,57 @@ export default function GtC(){
               {['genre','species','role','resource','range_type','region','release_year'].map((attr)=>{
                 const pMeta = metaIndex.get(picked.id)
                 const tMeta = metaIndex.get(target.id)
-                const pVal = pMeta ? (pMeta[attr] ?? 'blank') : 'blank'
-                const tVal = tMeta ? (tMeta[attr] ?? 'blank') : 'blank'
-                const match = (pVal !== 'blank' && tVal !== 'blank' && pVal === tVal)
-                const color = match ? 'bg-green-500' : 'bg-red-500'
+                let pVal:any = pMeta ? (pMeta[attr] ?? 'blank') : 'blank'
+                let tVal:any = tMeta ? (tMeta[attr] ?? 'blank') : 'blank'
+
+                // Normalize values to strings
+                const pStr = (typeof pVal === 'number') ? String(pVal) : (pVal || 'blank')
+                const tStr = (typeof tVal === 'number') ? String(tVal) : (tVal || 'blank')
+
+                // Helper to split multi-valued fields (comma-separated)
+                const tokens = (s:string) => s === 'blank' ? [] : s.split(',').map(x=>x.trim().toLowerCase())
+
+                let state: 'blank'|'exact'|'partial'|'none' = 'none'
+                if(pStr === 'blank' || tStr === 'blank') state = 'blank'
+                else if(attr === 'release_year'){
+                  // compare years
+                  if(pStr === tStr) state = 'exact'
+                  else state = 'none'
+                } else {
+                  if(pStr.toLowerCase() === tStr.toLowerCase()) state = 'exact'
+                  else {
+                    const a = tokens(pStr)
+                    const b = tokens(tStr)
+                    const inter = a.filter(x=> b.includes(x))
+                    if(inter.length>0) state = 'partial'
+                    else state = 'none'
+                  }
+                }
+
+                const dotClass = state === 'blank' ? 'bg-gray-500' : state === 'exact' ? 'bg-green-500' : state === 'partial' ? 'bg-yellow-400' : 'bg-red-500'
+
+                // For release_year, compute arrow (▲ younger / ▼ older) comparing target (searched) vs picked
+                let yearIndicator = null
+                if(attr === 'release_year' && pStr !== 'blank' && tStr !== 'blank'){
+                  const pYear = parseInt(pStr,10)
+                  const tYear = parseInt(tStr,10)
+                  if(!isNaN(pYear) && !isNaN(tYear)){
+                    if(tYear > pYear) yearIndicator = <span className="ml-2 text-yellow-300">▲</span>
+                    else if(tYear < pYear) yearIndicator = <span className="ml-2 text-yellow-300">▼</span>
+                  }
+                }
+
                 return (
                   <div key={attr} className="p-2 bg-neutral-800/40 rounded flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${pVal === 'blank' || tVal === 'blank' ? 'bg-gray-500' : color}`} />
-                    <div className="text-sm truncate"><strong className="capitalize">{attr.replace('_',' ')}</strong>: <span className="opacity-80">{pVal}</span></div>
+                    <div className={`w-3 h-3 rounded-full ${dotClass}`} />
+                    <div className="text-sm truncate"><strong className="capitalize">{attr.replace('_',' ')}</strong>: <span className="opacity-80">{pStr}</span>{yearIndicator}</div>
                   </div>
                 )
               })}
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="p-3 bg-neutral-800/40 rounded">
-              <div className="text-sm opacity-80">Health (lvl1)</div>
-              <div className="font-mono">{(picked.stats?.hp ?? 0)}</div>
-              <div className="text-xs opacity-70">{compareStat('hp')}</div>
-            </div>
-            <div className="p-3 bg-neutral-800/40 rounded">
-              <div className="text-sm opacity-80">Attack (lvl1)</div>
-              <div className="font-mono">{(picked.stats?.attackdamage ?? 0)}</div>
-              <div className="text-xs opacity-70">{compareStat('attackdamage')}</div>
-            </div>
-            <div className="p-3 bg-neutral-800/40 rounded">
-              <div className="text-sm opacity-80">Move Speed</div>
-              <div className="font-mono">{(picked.stats?.movespeed ?? 0)}</div>
-              <div className="text-xs opacity-70">{compareStat('movespeed')}</div>
-            </div>
-            <div className="p-3 bg-neutral-800/40 rounded">
-              <div className="text-sm opacity-80">Mana</div>
-              <div className="font-mono">{(picked.stats?.mp ?? 0)}</div>
-              <div className="text-xs opacity-70">{compareStat('mp')}</div>
-            </div>
-          </div>
+          {/* Stats grid removed per user request: no numeric stats displayed under attribute hints */}
         </div>
       )}
 
@@ -140,16 +164,73 @@ export default function GtC(){
         <div className="mt-4">
           <h4 className="text-sm font-semibold mb-2">Previous guesses</h4>
           <div className="space-y-2">
-            {history.map((h, idx)=> (
-              <div key={idx} className="flex items-center gap-3 p-2 bg-neutral-800/40 rounded">
-                <img src={championImageUrl(h.guess.image?.full ?? h.guess.image, h.guess.version)} width={40} height={40} className="rounded" alt="" />
-                <div className="flex-1">
-                  <div className="font-semibold">{h.guess.name}</div>
-                  <div className="text-xs opacity-70">{h.correct ? 'Correct' : 'Incorrect'}</div>
+            {history.map((h, idx)=> {
+              const attrs = ['genre','species','role','resource','range_type','region','release_year']
+              return (
+                <div key={idx} className="p-2 bg-neutral-800/40 rounded">
+                  <div className="flex items-center gap-3">
+                    <img src={championImageUrl(h.guess.image?.full ?? h.guess.image, h.guess.version)} width={40} height={40} className="rounded" alt="" />
+                    <div className="flex-1">
+                      <div className="font-semibold">{h.guess.name}</div>
+                      <div className="text-xs opacity-70">{h.correct ? 'Correct' : 'Incorrect'}</div>
+                    </div>
+                    <div className="text-xs opacity-60">{new Date(h.time).toLocaleTimeString()}</div>
+                  </div>
+
+                  {/* Attribute hints for this historic guess */}
+                  <div className="mt-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {attrs.map((attr)=>{
+                        const pMeta = metaIndex.get(h.guess.id)
+                        const tMeta = metaIndex.get(target.id)
+                        let pVal:any = pMeta ? (pMeta[attr] ?? 'blank') : 'blank'
+                        let tVal:any = tMeta ? (tMeta[attr] ?? 'blank') : 'blank'
+
+                        const pStr = (typeof pVal === 'number') ? String(pVal) : (pVal || 'blank')
+                        const tStr = (typeof tVal === 'number') ? String(tVal) : (tVal || 'blank')
+
+                        const tokens = (s:string) => s === 'blank' ? [] : s.split(',').map(x=>x.trim().toLowerCase())
+
+                        let state: 'blank'|'exact'|'partial'|'none' = 'none'
+                        if(pStr === 'blank' || tStr === 'blank') state = 'blank'
+                        else if(attr === 'release_year'){
+                          if(pStr === tStr) state = 'exact'
+                          else state = 'none'
+                        } else {
+                          if(pStr.toLowerCase() === tStr.toLowerCase()) state = 'exact'
+                          else {
+                            const a = tokens(pStr)
+                            const b = tokens(tStr)
+                            const inter = a.filter(x=> b.includes(x))
+                            if(inter.length>0) state = 'partial'
+                            else state = 'none'
+                          }
+                        }
+
+                        const dotClass = state === 'blank' ? 'bg-gray-500' : state === 'exact' ? 'bg-green-500' : state === 'partial' ? 'bg-yellow-400' : 'bg-red-500'
+
+                        let yearIndicator = null
+                        if(attr === 'release_year' && pStr !== 'blank' && tStr !== 'blank'){
+                          const pYear = parseInt(pStr,10)
+                          const tYear = parseInt(tStr,10)
+                          if(!isNaN(pYear) && !isNaN(tYear)){
+                            if(tYear > pYear) yearIndicator = <span className="ml-2 text-yellow-300">▲</span>
+                            else if(tYear < pYear) yearIndicator = <span className="ml-2 text-yellow-300">▼</span>
+                          }
+                        }
+
+                        return (
+                          <div key={attr} className="p-2 bg-neutral-800/30 rounded flex items-center gap-3">
+                            <div className={`w-3 h-3 rounded-full ${dotClass}`} />
+                            <div className="text-sm truncate"><strong className="capitalize">{attr.replace('_',' ')}</strong>: <span className="opacity-80">{pStr}</span>{yearIndicator}</div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-xs opacity-60">{new Date(h.time).toLocaleTimeString()}</div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}
