@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import getSupabase from '@/lib/supabaseClient';
 import { formatDistanceToNow } from 'date-fns';
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 
 export default function CommentSection({ postId }: { postId: string }) {
     const [comments, setComments] = useState<any[]>([]);
@@ -11,6 +11,9 @@ export default function CommentSection({ postId }: { postId: string }) {
     const [email, setEmail] = useState(''); // For guest/fallback
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingContent, setEditingContent] = useState('');
+    const [editLoading, setEditLoading] = useState(false);
 
     useEffect(() => {
         const supabase = getSupabase();
@@ -87,6 +90,26 @@ export default function CommentSection({ postId }: { postId: string }) {
         }
     }
 
+    async function handleSaveEdit(commentId: string) {
+        if (!editingContent.trim()) return;
+        setEditLoading(true);
+        const supabase = getSupabase();
+        if (!supabase) return;
+
+        const { data: updated, error } = await supabase.from('comments').update({ content: editingContent, updated_at: new Date().toISOString() }).eq('id', commentId).select().single();
+
+        if (!error && updated) {
+            setComments(prev => prev.map(c => (c.id === commentId ? updated : c)));
+            setEditingId(null);
+            setEditingContent('');
+        } else {
+            // Optionally show an error; keep edit open
+            console.error('Failed to update comment', error);
+        }
+
+        setEditLoading(false);
+    }
+
     return (
         <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-white/10">
             <h3 className="text-2xl font-bold mb-6 text-neutral-900 dark:text-white">Comments ({comments.length})</h3>
@@ -116,12 +139,53 @@ export default function CommentSection({ postId }: { postId: string }) {
                                 </div>
                             </div>
                             {user && user.id === comment.author_id && (
-                                <button onClick={() => handleDelete(comment.id)} className="text-neutral-500 hover:text-red-500">
-                                    <FaTrash />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {editingId === comment.id ? (
+                                        <>
+                                            <button
+                                                onClick={() => handleSaveEdit(comment.id)}
+                                                className="text-neutral-500 hover:text-green-500"
+                                                disabled={editLoading}
+                                            >
+                                                <FaSave />
+                                            </button>
+                                            <button
+                                                onClick={() => { setEditingId(null); setEditingContent(''); }}
+                                                className="text-neutral-500 hover:text-yellow-500"
+                                                disabled={editLoading}
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => { setEditingId(comment.id); setEditingContent(comment.content || ''); }}
+                                                className="text-neutral-500 hover:text-primary"
+                                            >
+                                                <FaEdit />
+                                            </button>
+                                            <button onClick={() => handleDelete(comment.id)} className="text-neutral-500 hover:text-red-500">
+                                                <FaTrash />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             )}
                         </div>
-                        <p className="text-neutral-700 dark:text-neutral-300 text-sm pl-10">{comment.content}</p>
+                        <div className="pl-10">
+                            {editingId === comment.id ? (
+                                <div>
+                                    <textarea
+                                        value={editingContent}
+                                        onChange={e => setEditingContent(e.target.value)}
+                                        className="w-full bg-white dark:bg-black/20 border border-neutral-300 dark:border-white/10 rounded px-3 py-2 h-24 text-neutral-900 dark:text-white"
+                                    />
+                                </div>
+                            ) : (
+                                <p className="text-neutral-700 dark:text-neutral-300 text-sm">{comment.content}</p>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>

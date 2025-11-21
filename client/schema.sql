@@ -15,6 +15,7 @@ create table if not exists public.posts (
 create table if not exists public.comments (
   id uuid default gen_random_uuid() primary key,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
   content text not null,
   post_id uuid references public.posts(id) on delete cascade not null,
   author_id uuid references auth.users(id) on delete cascade,
@@ -64,6 +65,11 @@ create policy "Authenticated users can create comments"
 create policy "Anyone can create comments"
   on public.comments for insert
   with check ( true );
+
+-- Users can update their own comments
+create policy "Users can update their own comments"
+  on public.comments for update
+  using ( auth.uid() = author_id );
 
 -- Only author or post author might delete? Let's keep it simple: author can delete.
 create policy "Users can delete their own comments"
