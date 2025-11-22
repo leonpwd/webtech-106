@@ -59,6 +59,20 @@ export default function RegisterPage() {
     setSuccess(
       "Inscription réussie — vérifiez votre email pour confirmer (si configuré). Redirection…",
     );
+    // Ensure new users get a default avatar in their user metadata so the
+    // header and dashboard show a consistent "no profile picture" image.
+    try {
+      if (data?.user) {
+        // Attempt to update the user's metadata with the default icon.
+        // This may fail silently if the session isn't active (email confirmation flows),
+        // so it's non-fatal.
+        await supabase.auth.updateUser({
+          data: { ...(data.user.user_metadata || {}), icon: "/default-icon.svg" },
+        });
+      }
+    } catch (err) {
+      // ignore errors from updateUser (e.g., no active session)
+    }
     // Optionally redirect after a short delay
     setTimeout(() => router.push("/"), 1600);
   }

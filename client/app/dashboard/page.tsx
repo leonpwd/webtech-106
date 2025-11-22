@@ -358,7 +358,7 @@ export default function Dashboard() {
         <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
         <div className="flex items-center gap-4 mb-6">
           <img
-            src={icon || "/default-icon.png"}
+            src={icon || "/default-icon.svg"}
             alt="User Icon"
             className="w-16 h-16 rounded-full border border-border"
           />
