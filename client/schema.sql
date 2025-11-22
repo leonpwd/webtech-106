@@ -8,6 +8,7 @@ create table if not exists public.posts (
   author_id uuid references auth.users(id) on delete cascade not null,
   author_email text,
   author_name text,
+  author_avatar_url text,
   categories text[] default '{}',
   tags text[] default '{}'
 );
@@ -98,11 +99,14 @@ as $$
 declare
   raw jsonb;
   provider_name text;
+  avatar_candidate text;
 begin
   if new.author_id is not null then
     select raw_user_meta_data into raw from auth.users where id = new.author_id limit 1;
     if raw is not null then
       provider_name := (raw->>'name');
+      -- Try several common keys for avatar/icon stored by various providers
+      avatar_candidate := coalesce(raw->>'avatar_url', raw->>'icon', raw->>'picture');
     end if;
   end if;
 
@@ -115,6 +119,13 @@ begin
     else
       new.author_name := null;
     end if;
+  end if;
+
+  -- If we found an avatar candidate and the incoming row doesn't already
+  -- provide an explicit `author_avatar_url`, snapshot the user's avatar
+  -- url at insert time so historical posts/comments keep their original icon.
+  if avatar_candidate is not null and (new.author_avatar_url is null or length(trim(coalesce(new.author_avatar_url, ''))) = 0) then
+    new.author_avatar_url := avatar_candidate;
   end if;
 
   return new;
