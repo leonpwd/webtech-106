@@ -53,8 +53,10 @@ export default function PostForm({
 
     // Use only the provider/raw metadata `name` field as requested.
     // Fall back to email local-part if not present.
+    // `raw_user_meta_data` isn't part of the typed `User` interface from supabase-js,
+    // cast to `any` to avoid TypeScript errors while accessing provider metadata.
     const nameFromUser =
-      user?.raw_user_meta_data?.name ?? (user?.email ? user.email.split("@")[0] : null);
+      (user as any)?.raw_user_meta_data?.name ?? (user?.email ? user.email.split("@")[0] : null);
 
     const postData = {
       title,

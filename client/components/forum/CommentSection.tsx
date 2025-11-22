@@ -84,8 +84,9 @@ export default function CommentSection({ postId }: { postId: string }) {
 
     // Use only the provider/raw metadata `name` field as requested.
     // Fall back to email local-part if not present.
-    const nameFromUser =
-      user?.raw_user_meta_data?.name ?? email.split("@")[0];
+    // `raw_user_meta_data` isn't in the typed `User` interface from supabase-js,
+    // cast to `any` to access provider/raw metadata without TypeScript errors.
+    const nameFromUser = (user as any)?.raw_user_meta_data?.name ?? email.split("@")[0];
 
     const { data: insertedComment, error } = await supabase
       .from("comments")
