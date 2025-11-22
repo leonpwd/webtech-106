@@ -84,7 +84,9 @@ export default function PostDetail({ id }: { id: string }) {
         </div>
 
         <div className="flex items-center gap-4 text-sm text-neutral-400 mb-8">
-          <span>By {post.author_email}</span>
+          <span>
+            By {post.author_name || (post.author_email && post.author_email.split("@")[0])}
+          </span>
           <span>•</span>
           <span>
             {formatDistanceToNow(new Date(post.created_at), {

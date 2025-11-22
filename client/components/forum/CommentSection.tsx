@@ -82,6 +82,11 @@ export default function CommentSection({ postId }: { postId: string }) {
     const supabase = getSupabase();
     if (!supabase) return;
 
+    // Use only the provider/raw metadata `name` field as requested.
+    // Fall back to email local-part if not present.
+    const nameFromUser =
+      user?.raw_user_meta_data?.name ?? email.split("@")[0];
+
     const { data: insertedComment, error } = await supabase
       .from("comments")
       .insert({
@@ -89,7 +94,7 @@ export default function CommentSection({ postId }: { postId: string }) {
         content: newComment,
         author_id: user?.id || null,
         author_email: email,
-        author_name: user?.user_metadata?.full_name || email.split("@")[0],
+        author_name: nameFromUser,
         author_avatar_url: user?.user_metadata?.icon || null,
       })
       .select()

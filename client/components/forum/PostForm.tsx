@@ -51,11 +51,17 @@ export default function PostForm({
       return;
     }
 
+    // Use only the provider/raw metadata `name` field as requested.
+    // Fall back to email local-part if not present.
+    const nameFromUser =
+      user?.raw_user_meta_data?.name ?? (user?.email ? user.email.split("@")[0] : null);
+
     const postData = {
       title,
       content,
       author_id: user.id,
       author_email: user.email,
+      author_name: nameFromUser,
       categories: categories
         .split(",")
         .map((s) => s.trim())

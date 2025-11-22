@@ -10,6 +10,7 @@ interface PostCardProps {
     content: string; // We might want to strip HTML for preview
     created_at: string;
     author_email: string;
+    author_name?: string;
     categories?: string[];
     tags?: string[];
   };
@@ -25,7 +26,7 @@ export default function PostCard({ post }: PostCardProps) {
       <Link href={`/forum/${post.id}`} className="block">
         <h3 className="text-xl font-bold mb-2 text-primary">{post.title}</h3>
         <p className="text-neutral-400 text-sm mb-4">
-          By {post.author_email?.split("@")[0] || "Unknown"} •{" "}
+          By {post.author_name || post.author_email?.split("@")[0] || "Unknown"} •{" "}
           {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
         </p>
         <p className="text-neutral-300 mb-4">{preview}</p>

@@ -7,6 +7,7 @@ create table if not exists public.posts (
   content text not null,
   author_id uuid references auth.users(id) on delete cascade not null,
   author_email text,
+  author_name text,
   categories text[] default '{}',
   tags text[] default '{}'
 );
@@ -86,3 +87,50 @@ as $$
   where to_tsvector('english', title || ' ' || content) @@ plainto_tsquery('english', keyword)
   order by created_at desc;
 $$;
+
+-- Trigger to enforce author_name from auth.users.raw_user_meta_data->>'name' on insert
+create or replace function public.set_author_name_on_insert()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_catalog
+as $$
+declare
+  raw jsonb;
+  provider_name text;
+begin
+  if new.author_id is not null then
+    select raw_user_meta_data into raw from auth.users where id = new.author_id limit 1;
+    if raw is not null then
+      provider_name := (raw->>'name');
+    end if;
+  end if;
+
+  if provider_name is not null and length(trim(provider_name)) > 0 then
+    new.author_name := provider_name;
+  else
+    -- fallback to local-part of email if provider name missing
+    if new.author_email is not null then
+      new.author_name := split_part(new.author_email, '@', 1);
+    else
+      new.author_name := null;
+    end if;
+  end if;
+
+  return new;
+end;
+$$;
+
+-- Attach trigger for posts
+drop trigger if exists set_author_name_posts on public.posts;
+create trigger set_author_name_posts
+before insert on public.posts
+for each row
+execute procedure public.set_author_name_on_insert();
+
+-- Attach trigger for comments
+drop trigger if exists set_author_name_comments on public.comments;
+create trigger set_author_name_comments
+before insert on public.comments
+for each row
+execute procedure public.set_author_name_on_insert();
