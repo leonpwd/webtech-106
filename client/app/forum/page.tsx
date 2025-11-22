@@ -2,11 +2,13 @@ import PostList from "@/components/forum/PostList";
 import Link from "next/link";
 import { FaPlus } from "react-icons/fa";
 
-export default function ForumPage({
+export default async function ForumPage({
   searchParams,
 }: {
-  searchParams?: { q?: string };
+  searchParams?: { q?: string } | Promise<{ q?: string } | undefined>;
 }) {
+  // Next may provide `searchParams` as a Promise in some runtimes — await to be safe
+  const params = await (searchParams as any);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -34,7 +36,7 @@ export default function ForumPage({
               type="text"
               name="q"
               placeholder="Search discussions..."
-              defaultValue={searchParams?.q}
+              defaultValue={params?.q}
               className="w-full bg-white/5 border border-white/10 rounded-lg px-6 py-4 pl-12 focus:outline-none focus:border-primary transition"
             />
             <svg
@@ -53,7 +55,7 @@ export default function ForumPage({
           </form>
         </div>
 
-        <PostList searchParams={searchParams} />
+        <PostList searchParams={params} />
       </div>
     </div>
   );

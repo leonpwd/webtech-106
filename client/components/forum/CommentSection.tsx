@@ -14,6 +14,7 @@ export default function CommentSection({ postId }: { postId: string }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -119,24 +120,85 @@ export default function CommentSection({ postId }: { postId: string }) {
     if (!editingContent.trim()) return;
     setEditLoading(true);
     const supabase = getSupabase();
-    if (!supabase) return;
-
-    const { data: updated, error } = await supabase
-      .from("comments")
-      .update({ content: editingContent, updated_at: new Date().toISOString() })
-      .eq("id", commentId)
-      .select()
-      .single();
-
-    if (!error && updated) {
+    if (!supabase) {
+      // If Supabase isn't configured, apply the edit locally so the UI stays responsive,
+      // but surface a clear message that the change won't be persisted.
       setComments((prev) =>
-        prev.map((c) => (c.id === commentId ? updated : c)),
+        prev.map((c) =>
+          c.id === commentId
+            ? { ...c, content: editingContent, updated_at: new Date().toISOString() }
+            : c,
+        ),
       );
       setEditingId(null);
       setEditingContent("");
+      setEditError("Supabase not configured — changes applied locally only.");
+      setEditLoading(false);
+      return;
+    }
+
+    // Avoid updating `updated_at` column directly — some schemas may not have it.
+    // Log payload and auth state to help debug why updates may silently not apply.
+    console.debug("Updating comment payload", {
+      commentId,
+      content: editingContent,
+      userId: user?.id ?? null,
+    });
+
+    // Use the raw response and normalize `data` which may be an array or object.
+    const res = await supabase
+      .from("comments")
+      .update({ content: editingContent })
+      .eq("id", commentId)
+      .select();
+
+    // Log the raw Supabase response for debugging (body, error, status-like fields)
+    try {
+      console.debug("Supabase update response", res);
+    } catch (e) {
+      console.warn("Failed to stringify Supabase response for debug:", e);
+    }
+
+    let updated: any = null;
+    const error = (res as any).error ?? null;
+    if (res && (res as any).data) {
+      if (Array.isArray((res as any).data)) {
+        updated = (res as any).data[0] ?? null;
+      } else {
+        updated = (res as any).data ?? null;
+      }
+    }
+
+    if (error) {
+      // Update failed — show detailed error and keep edit open so user can retry
+      // Log a readable error message. Some Supabase errors are plain objects.
+      try {
+        const text = error?.message ?? error?.msg ?? JSON.stringify(error);
+        console.error("Supabase update failed for comment", commentId, text);
+      } catch (e) {
+        console.error("Supabase update failed for comment", commentId, error);
+      }
+      const message = (error && (error.message || error.msg || JSON.stringify(error))) || "Failed to update comment";
+      setEditError(message as string);
+    } else if (updated) {
+      // Success: server returned the updated row
+      setComments((prev) => prev.map((c) => (c.id === commentId ? updated : c)));
+      setEditingId(null);
+      setEditingContent("");
+      setEditError(null);
     } else {
-      // Optionally show an error; keep edit open
-      console.error("Failed to update comment", error);
+      // No error, but server didn't return the updated row (could be PostgREST config).
+      // Re-fetch comments to verify persistence, then close edit if changes are present.
+      try {
+        await fetchComments();
+        // After refetch, clear editing state — if the change wasn't persisted the user can try again.
+        setEditingId(null);
+        setEditingContent("");
+        setEditError(null);
+      } catch (e) {
+        console.error("Update returned no row and refetch failed:", e);
+        setEditError("Update may not have been saved; please try again.");
+      }
     }
 
     setEditLoading(false);
@@ -231,6 +293,9 @@ export default function CommentSection({ postId }: { postId: string }) {
                     onChange={(e) => setEditingContent(e.target.value)}
                     className="w-full bg-white dark:bg-black/20 border border-neutral-300 dark:border-white/10 rounded px-3 py-2 h-24 text-neutral-900 dark:text-white"
                   />
+                  {editingId === comment.id && editError && (
+                    <div className="mt-2 text-sm text-red-600">{editError}</div>
+                  )}
                 </div>
               ) : (
                 <p className="text-neutral-700 dark:text-neutral-300 text-sm">

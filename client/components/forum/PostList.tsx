@@ -25,7 +25,14 @@ export default function PostList({
   async function fetchPosts() {
     setLoading(true);
     const supabase = getSupabase();
-    if (!supabase) return;
+    if (!supabase) {
+      // Supabase not configured: gracefully show empty list instead of hanging
+      console.warn("Supabase client not available — PostList will show no posts.");
+      setPosts([]);
+      setHasMore(false);
+      setLoading(false);
+      return;
+    }
 
     let queryBuilder = supabase
       .from("posts")
