@@ -97,6 +97,19 @@ export default function Dashboard() {
         setMessage("Profile updated successfully.");
         setUser(data.user);
         setPassword("");
+
+        // Sync profile to posts and comments
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+
+        if (token) {
+          await fetch("/api/user/sync-profile", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        }
       }
     } catch (err: any) {
       setError(err.message || String(err));
@@ -223,7 +236,7 @@ export default function Dashboard() {
       if (typeof window !== "undefined") {
         (window as any).__skipThemeApplyUntil = Date.now() + 2000;
       }
-    } catch (err) {}
+    } catch (err) { }
 
     colorPersistTimerRef.current = window.setTimeout(async () => {
       try {
@@ -250,7 +263,7 @@ export default function Dashboard() {
             (window as any).__themeUpdateInFlight = false;
             (window as any).__skipThemeApplyUntil = Date.now() + 200;
           }
-        } catch (e) {}
+        } catch (e) { }
         colorPersistTimerRef.current = null;
       }
     }, 700);
