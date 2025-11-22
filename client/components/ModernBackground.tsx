@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 export default function ModernBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -10,7 +10,7 @@ export default function ModernBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl');
+    const gl = canvas.getContext("webgl");
     if (!gl) return;
 
     const vertexSrc = `
@@ -111,7 +111,7 @@ export default function ModernBackground() {
       gl.shaderSource(shader, source);
       gl.compileShader(shader);
       if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        console.error("Shader compile error:", gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
         return null;
       }
@@ -127,16 +127,16 @@ export default function ModernBackground() {
     gl.attachShader(program, fShader);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error('Program link error', gl.getProgramInfoLog(program));
+      console.error("Program link error", gl.getProgramInfoLog(program));
       return;
     }
 
     gl.useProgram(program);
 
-    const positionLoc = gl.getAttribLocation(program, 'aPosition');
-    const resLoc = gl.getUniformLocation(program, 'uResolution');
-    const timeLoc = gl.getUniformLocation(program, 'uTime');
-    const primaryLoc = gl.getUniformLocation(program, 'uPrimary');
+    const positionLoc = gl.getAttribLocation(program, "aPosition");
+    const resLoc = gl.getUniformLocation(program, "uResolution");
+    const timeLoc = gl.getUniformLocation(program, "uTime");
+    const primaryLoc = gl.getUniformLocation(program, "uPrimary");
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -156,15 +156,17 @@ export default function ModernBackground() {
     }
 
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener("resize", resize);
 
     // read computed primary color from CSS variable (hsl var stored as "H S% L%") or fallback
     function getPrimaryRGB() {
       try {
-        const s = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+        const s = getComputedStyle(document.documentElement)
+          .getPropertyValue("--primary")
+          .trim();
         if (!s) return [0.22, 0.56, 0.96]; // fallback bluish
         // s is like "217.2 91.2% 59.8%" -> convert to rgb
-        const parts = s.split(' ').map((p) => p.replace('%', ''));
+        const parts = s.split(" ").map((p) => p.replace("%", ""));
         const h = parseFloat(parts[0]) / 360.0;
         const sat = parseFloat(parts[1]) / 100.0;
         const l = parseFloat(parts[2]) / 100.0;
@@ -172,7 +174,8 @@ export default function ModernBackground() {
         const a = sat * Math.min(l, 1.0 - l);
         const f = (n: number) => {
           const k = (n + h * 12.0) % 12.0;
-          const color = l - a * Math.max(-1.0, Math.min(k - 3.0, Math.min(9.0 - k, 1.0)));
+          const color =
+            l - a * Math.max(-1.0, Math.min(k - 3.0, Math.min(9.0 - k, 1.0)));
           return color;
         };
         return [f(0), f(8), f(4)];
@@ -187,9 +190,11 @@ export default function ModernBackground() {
     // read background lightness from CSS var '--background' (H S% L%) and use as a theme hint
     function getBackgroundLightness() {
       try {
-        const s = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
+        const s = getComputedStyle(document.documentElement)
+          .getPropertyValue("--background")
+          .trim();
         if (!s) return 0.0;
-        const parts = s.split(' ').map((p) => p.replace('%', ''));
+        const parts = s.split(" ").map((p) => p.replace("%", ""));
         const l = parseFloat(parts[2]) / 100.0;
         return l; // 0..1
       } catch (err) {
@@ -200,7 +205,7 @@ export default function ModernBackground() {
     const lightness = getBackgroundLightness();
     // convert lightness to a simple 0..1 theme factor where >0.5 is light mode
     const themeFactor = Math.min(1, Math.max(0, (lightness - 0.35) / 0.65));
-    const lightLoc = gl.getUniformLocation(program, 'uLight');
+    const lightLoc = gl.getUniformLocation(program, "uLight");
     if (lightLoc) gl.uniform1f(lightLoc, themeFactor);
 
     // observe theme class changes to update uniforms when user toggles theme
@@ -211,7 +216,10 @@ export default function ModernBackground() {
       const tf = Math.min(1, Math.max(0, (l - 0.35) / 0.65));
       if (lightLoc) gl.uniform1f(lightLoc, tf);
     });
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    mo.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
 
     let start = performance.now();
     function render(now: number) {
@@ -221,16 +229,20 @@ export default function ModernBackground() {
       rafRef.current = requestAnimationFrame(render);
     }
 
-  rafRef.current = requestAnimationFrame(render);
+    rafRef.current = requestAnimationFrame(render);
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       mo.disconnect();
-      window.removeEventListener('resize', resize);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
   return (
-    <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 -z-20 w-full h-full" aria-hidden />
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none absolute inset-0 -z-20 w-full h-full"
+      aria-hidden
+    />
   );
 }

@@ -1,18 +1,24 @@
-import './globals.css';
-import SiteHeader from '@/components/SiteHeader';
-import ThemeManager from '@/components/ThemeManager';
+import "./globals.css";
+import SiteHeader from "@/components/SiteHeader";
+import ThemeManager from "@/components/ThemeManager";
 
 export const metadata = {
-  title: 'League of Legends — Champions Hub (Client)',
-  description: 'Modern Arcane-themed champions index',
+  title: "League of Legends — Champions Hub (Client)",
+  description: "Modern Arcane-themed champions index",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-  <html lang="en" className="dark">
+    <html lang="en" className="dark">
       <body className="min-h-screen bg-background text-foreground flex flex-col">
         {/* Inline script to set theme before React hydrates to avoid flash-of-unstyled-theme */}
-        <script dangerouslySetInnerHTML={{ __html: `
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
           (function(){
             try {
               var stored = null;
@@ -24,7 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               document.documentElement.classList.add('dark');
             } catch (e) {}
           })();
-        ` }} />
+        `,
+          }}
+        />
         <ThemeManager />
         <SiteHeader />
         <main className="flex-1 overflow-hidden">{children}</main>

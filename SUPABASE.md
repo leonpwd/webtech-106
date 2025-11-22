@@ -3,6 +3,7 @@
 This document explains how to initialize and configure the Supabase database used by this project, apply the SQL schema, enable Row-Level Security (RLS), and seed useful sample data for manual testing.
 
 Files referenced:
+
 - `client/schema.sql` — the SQL schema used by the project (tables, constraints, and policies).
 - `client/components/forum/CommentSection.tsx` — client code that updates comments and depends on `comments.updated_at` + RLS policy.
 
@@ -48,6 +49,7 @@ psql "$SUPABASE_DB_URL" -f client/schema.sql
 ```
 
 Notes:
+
 - If you prefer a migration workflow, use the Supabase CLI and a migrations folder, or a third-party migration tool. The repository currently provides `client/schema.sql` as the canonical schema source.
 
 ---
@@ -118,6 +120,7 @@ supabase db push
 ---
 
 If you want, I can:
+
 - Add a `supabase:seed` script to `client/package.json` that runs `psql` with `client/schema.sql` and optional seed SQL.
 - Create a migrations folder and wire up `supabase` CLI migrations.
 

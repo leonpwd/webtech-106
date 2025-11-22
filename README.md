@@ -7,12 +7,14 @@
 **Live demo (example):** `https://riftforge-delta.vercel.app/` (may be outdated; your local dev server runs at `http://localhost:3000`).
 
 ## **Quick Overview**
+
 - **Stack:** Next.js (App Router), React, Tailwind CSS, Supabase (auth + Postgres), client-side JSON fallbacks in `public/data`.
 - **Key features implemented:** authentication via Supabase, champion index, champion detail pages, Guess The Champ (`/gtc`) interactive game with hint logic, user dashboard and theme persistence, forum with posts and comments (including inline comment editing), search/typeahead, responsive UI.
 
 ## **Getting Started**
 
 ### **Prerequisites**
+
 - `Node.js` 18+ and `npm` (or `yarn`).
 
 ### **Clone & Install**
@@ -24,6 +26,7 @@ npm install
 ```
 
 ### **Environment variables**
+
 To enable Supabase persistence and authentication, create `client/.env.local` with these values:
 
 ```
@@ -47,6 +50,7 @@ npm start
 ---
 
 ## **Project Structure (important paths)**
+
 - `client/` — Next.js app code (pages, components, styles)
 - `client/public/data/` — local JSON data: `champions.json`, `champions_meta.json` (used by the Guess The Champ game)
 - `client/components/` — reusable UI components (including `forum/` components)
@@ -126,6 +130,7 @@ This project was built to satisfy the course tasks listed in `PROJECT.md`. Below
 - **Design, UX, content (4 pts):** Responsive UI, theme switcher, animated background and polished components. (Status: Done)
 
 Application development features:
+
 - **Home & Navigation (2 pts):** Implemented — shared layout and header. (Status: Done)
 - **Login & profile (4 pts):** Supabase auth integrated; profile/dashboard exist. (Status: Done)
 - **Post creation/display (6 pts):** Posts and post pages exist; creation UI present in forum patterns — adapt as needed. (Status: Partial)
@@ -155,6 +160,7 @@ If you want one of these, tell me which and I will proceed.
 Authors: Léon Dalle, Nirziin
 
 License: educational / demo use
+
 # League of Legends Champions Index & Quiz 🚀
 
 A modern, animated Next.js web application showcasing an index of League of Legends champions and an interactive quiz about these characters. Built with cutting-edge technologies and featuring a beautiful, responsive design.
@@ -168,6 +174,7 @@ A modern, animated Next.js web application showcasing an index of League of Lege
 ## ✨ Features
 
 ### 🎨 Modern Design
+
 - **Animated landing page** with floating background elements
 - **Gradient backgrounds** and smooth transitions
 - **Interactive hover effects** with scale transforms
@@ -175,6 +182,7 @@ A modern, animated Next.js web application showcasing an index of League of Lege
 - **Fully responsive** design for all devices
 
 ### 📱 Pages & Functionality
+
 - **Home** (`/`) - Stunning animated landing page with hero section
 - **Champions** (`/champions`) - Index of League of Legends champions
 - **Guess The Champ** (`/gtc`) - Interactive quiz about League of Legends champions
