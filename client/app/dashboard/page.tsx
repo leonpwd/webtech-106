@@ -431,22 +431,24 @@ export default function Dashboard() {
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-2">Connected Accounts</h3>
           <div className="flex flex-col gap-2">
-            {user?.identities && user.identities.length > 0 ? (
-              user.identities.map((id: any) => (
-                <div
-                  key={id.id || id.provider + id.provider_user_id}
-                  className="flex items-center justify-between bg-muted/20 p-2 rounded-sm border border-border"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="font-mono text-sm text-muted-foreground">
-                      {id.provider}
-                    </div>
-                    <div className="text-sm text-foreground">
-                      {id.provider_user_id ?? id.identity_id}
+            {user?.identities &&
+              user.identities.filter((id: any) => id.provider !== "email").length >
+              0 ? (
+              user.identities
+                .filter((id: any) => id.provider !== "email")
+                .map((id: any) => (
+                  <div
+                    key={id.id || id.provider + id.provider_user_id}
+                    className="flex items-center justify-between bg-muted/20 p-2 rounded-sm border border-border"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="font-mono text-sm text-muted-foreground capitalize">
+                        {id.provider}
+                      </div>
+                      {/* UUID hidden as requested */}
                     </div>
                   </div>
-                </div>
-              ))
+                ))
             ) : (
               <div className="text-sm text-muted-foreground">
                 No external providers linked.

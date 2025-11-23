@@ -11,6 +11,7 @@ interface PostCardProps {
     created_at: string;
     author_email: string;
     author_name?: string;
+    author_avatar_url?: string;
     categories?: string[];
     tags?: string[];
   };
@@ -25,10 +26,23 @@ export default function PostCard({ post }: PostCardProps) {
     <div className="bg-white/5 border border-white/10 rounded-lg p-6 hover:bg-white/10 transition">
       <Link href={`/forum/${post.id}`} className="block">
         <h3 className="text-xl font-bold mb-2 text-primary">{post.title}</h3>
-        <p className="text-neutral-400 text-sm mb-4">
-          By {post.author_name || post.author_email?.split("@")[0] || "Unknown"} •{" "}
-          {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
-        </p>
+        <div className="flex items-center gap-2 mb-4">
+          {post.author_avatar_url && (
+            <img
+              src={post.author_avatar_url}
+              alt={post.author_name || "Author"}
+              className="w-6 h-6 rounded-full object-cover border border-white/10"
+            />
+          )}
+          <p className="text-neutral-400 text-sm">
+            By{" "}
+            {post.author_name || post.author_email?.split("@")[0] || "Unknown"}{" "}
+            •{" "}
+            {formatDistanceToNow(new Date(post.created_at), {
+              addSuffix: true,
+            })}
+          </p>
+        </div>
         <p className="text-neutral-300 mb-4">{preview}</p>
 
         <div className="flex flex-wrap gap-2">

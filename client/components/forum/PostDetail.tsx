@@ -84,9 +84,20 @@ export default function PostDetail({ id }: { id: string }) {
         </div>
 
         <div className="flex items-center gap-4 text-sm text-neutral-400 mb-8">
-          <span>
-            By {post.author_name || (post.author_email && post.author_email.split("@")[0])}
-          </span>
+          <div className="flex items-center gap-2">
+            {post.author_avatar_url && (
+              <img
+                src={post.author_avatar_url}
+                alt={post.author_name || "Author"}
+                className="w-8 h-8 rounded-full object-cover border border-white/10"
+              />
+            )}
+            <span>
+              By{" "}
+              {post.author_name ||
+                (post.author_email && post.author_email.split("@")[0])}
+            </span>
+          </div>
           <span>•</span>
           <span>
             {formatDistanceToNow(new Date(post.created_at), {
