@@ -132,7 +132,7 @@ There could be more thoughts put into this feature.
 
 *What is the technically most difficult or most polished feature you built?*
 
-Léon : [Your answer here]
+Léon : It's a tough question, I think the most polished one is the landing page, with that beautiful visual effect when coming on the app. However, my most difficult task was the dashboard of each users, because it is much more complex than it seems. You must handle the display of the user's data, but also maybe its oauth providers, and handle his password and pfp changes. So I think I'll go for the dashboard.
 
 Romain : [Your answer here]
 
@@ -140,7 +140,7 @@ Romain : [Your answer here]
 
 *If you had more time, what would you add or improve in your project?*
 
-Léon : [Your answer here]
+Léon : I think the forum needs a lot more features to be really enjoyable. The ability for example to mention other users, and as such to send them notifications if they are pinged in a post. Also, a live room to chat in real time with other users would be a great addition.
 
 Romain : [Your answer here]
 
@@ -148,6 +148,8 @@ Romain : [Your answer here]
 
 *What did you enjoy about this course? What could be improved for next year?*
 
-Léon : [Your answer here]
+Léon : I did enjoy a lot the class ! The course was really interesting, especially when the teacher explained the different concepts when talking about SSR, SSG and CSR. Also, the class on git was quite useful to understand better the insides of git, since I mostly use git in a superficial, GUI way. We had very good explanations from the teacher, and when we didn't understand something, he would take the time to explain it again, in a different way. 
+
+hat could be improved is maybe the format of the monday's classes, since (not your fault) being on online classes and following the other students' reviewing each other's projects was not the best use of time and is quite "boring" when your turn has ended. I don't blame the teacher for this, it's mostly the school's fault for not being able to organise in-person classes. Apart from this, i really enjoyed webtech's classes.
 
 Romain : [Your answer here]
