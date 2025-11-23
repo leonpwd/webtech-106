@@ -3,8 +3,11 @@ import SiteHeader from "@/components/SiteHeader";
 import ThemeManager from "@/components/ThemeManager";
 
 export const metadata = {
-  title: "League of Legends — Champions Hub (Client)",
-  description: "Modern Arcane-themed champions index",
+  title: "RiftForge",
+  description: "Where people forge their destinies",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -14,6 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className="min-h-screen bg-background text-foreground flex flex-col">
         {/* Inline script to set theme before React hydrates to avoid flash-of-unstyled-theme */}
         <script
