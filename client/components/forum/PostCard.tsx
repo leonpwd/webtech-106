@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import LikeButton from "./LikeButton";
 
 interface PostCardProps {
   post: {
@@ -31,7 +32,7 @@ export default function PostCard({ post }: PostCardProps) {
             <img
               src={post.author_avatar_url}
               alt={post.author_name || "Author"}
-              className="w-6 h-6 rounded-full object-cover border border-white/10"
+              className="w-10 h-10 rounded-full object-cover border border-white/10"
             />
           )}
           <p className="text-neutral-400 text-sm">
@@ -45,7 +46,7 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
         <p className="text-neutral-300 mb-4">{preview}</p>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-4">
           {post.categories?.map((cat, i) => (
             <span
               key={i}
@@ -62,6 +63,10 @@ export default function PostCard({ post }: PostCardProps) {
               #{tag}
             </span>
           ))}
+        </div>
+
+        <div className="flex items-center justify-between mt-4">
+          <LikeButton targetId={post.id} type="post" />
         </div>
       </Link>
     </div>

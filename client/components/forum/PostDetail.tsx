@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import CommentSection from "./CommentSection";
 import { FaEdit, FaTrash, FaArrowLeft } from "react-icons/fa";
 import DOMPurify from "isomorphic-dompurify";
+import LikeButton from "./LikeButton";
 
 export default function PostDetail({ id }: { id: string }) {
   const [post, setPost] = useState<any>(null);
@@ -89,7 +90,7 @@ export default function PostDetail({ id }: { id: string }) {
               <img
                 src={post.author_avatar_url}
                 alt={post.author_name || "Author"}
-                className="w-8 h-8 rounded-full object-cover border border-white/10"
+                className="w-12 h-12 rounded-full object-cover border border-white/10"
               />
             )}
             <span>
@@ -121,6 +122,10 @@ export default function PostDetail({ id }: { id: string }) {
           className="prose prose-invert max-w-none"
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
         />
+
+        <div className="mt-8">
+          <LikeButton targetId={post.id} type="post" />
+        </div>
       </div>
 
       <CommentSection postId={post.id} />

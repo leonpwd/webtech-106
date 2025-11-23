@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import getSupabase from "@/lib/supabaseClient";
 import { formatDistanceToNow } from "date-fns";
 import { FaTrash, FaEdit, FaSave, FaTimes } from "react-icons/fa";
+import LikeButton from "./LikeButton";
 
 export default function CommentSection({ postId }: { postId: string }) {
   const [comments, setComments] = useState<any[]>([]);
@@ -229,10 +230,10 @@ export default function CommentSection({ postId }: { postId: string }) {
                   <img
                     src={comment.author_avatar_url}
                     alt={comment.author_name || "User"}
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-10 h-10 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
                     {(comment.author_email?.[0] || "A").toUpperCase()}
                   </div>
                 )}
@@ -304,9 +305,12 @@ export default function CommentSection({ postId }: { postId: string }) {
                   )}
                 </div>
               ) : (
-                <p className="text-neutral-700 dark:text-neutral-300 text-sm">
-                  {comment.content}
-                </p>
+                <>
+                  <p className="text-neutral-700 dark:text-neutral-300 text-sm mb-2">
+                    {comment.content}
+                  </p>
+                  <LikeButton targetId={comment.id} type="comment" />
+                </>
               )}
             </div>
           </div>
