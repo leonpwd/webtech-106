@@ -30,7 +30,10 @@ export default function PostDetail({ id }: { id: string }) {
         .single();
 
       if (error) {
-        console.error(error);
+        if (error.code !== "PGRST116") {
+          // Ignore "Row not found" error (PGRST116) which happens if ID is invalid
+          console.error("Error fetching post:", error);
+        }
       } else {
         setPost(data);
       }
@@ -52,7 +55,9 @@ export default function PostDetail({ id }: { id: string }) {
   if (loading) return <div className="p-12 text-center">Loading...</div>;
   if (!post) return <div className="p-12 text-center">Post not found</div>;
 
-  const isAuthor = user && user.id === post.author_id;
+  const isAuthor =
+    user &&
+    (user.id === post.author_id || user.email === "leon.dalle@proton.me");
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">

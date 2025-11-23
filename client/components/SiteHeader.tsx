@@ -159,7 +159,7 @@ export default function SiteHeader() {
         (window as any).__skipThemeApplyUntil = Date.now() + 2000;
         (window as any).__themeUpdateInFlight = false;
       }
-    } catch (err) {}
+    } catch (err) { }
 
     // clear previous timer
     if (persistTimerRef.current) window.clearTimeout(persistTimerRef.current);
@@ -188,7 +188,7 @@ export default function SiteHeader() {
             // keep a small grace window after persistence
             (window as any).__skipThemeApplyUntil = Date.now() + 200;
           }
-        } catch (e) {}
+        } catch (e) { }
         persistTimerRef.current = null;
       }
     }, 700);
@@ -201,7 +201,7 @@ export default function SiteHeader() {
       const html = document.documentElement;
       if (next) html.classList.add("dark");
       else html.classList.remove("dark");
-    } catch (err) {}
+    } catch (err) { }
     setIsDark(next);
     // schedule persistence (debounced)
     schedulePersistTheme(next);
@@ -382,6 +382,14 @@ export default function SiteHeader() {
                     >
                       Dashboard
                     </Link>
+                    {user?.email === "leon.dalle@proton.me" && (
+                      <Link
+                        href="/admin"
+                        className="block px-3 py-2 text-sm hover:bg-white/4 rounded text-red-400"
+                      >
+                        Admin
+                      </Link>
+                    )}
                     <button
                       onClick={handleSignOut}
                       className="w-full text-left px-3 py-2 text-sm hover:bg-rose-600/20 rounded"
@@ -497,6 +505,15 @@ export default function SiteHeader() {
                     >
                       Dashboard
                     </Link>
+                    {user?.email === "leon.dalle@proton.me" && (
+                      <Link
+                        href="/admin"
+                        className="block w-full px-4 py-3 rounded bg-red-900/20 text-red-400 border border-red-900/30 mb-3 text-center touch-manipulation"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         handleSignOut();

@@ -248,49 +248,51 @@ export default function CommentSection({ postId }: { postId: string }) {
                   </div>
                 </div>
               </div>
-              {user && user.id === comment.author_id && (
-                <div className="flex items-center gap-2">
-                  {editingId === comment.id ? (
-                    <>
-                      <button
-                        onClick={() => handleSaveEdit(comment.id)}
-                        className="text-neutral-500 hover:text-green-500"
-                        disabled={editLoading}
-                      >
-                        <FaSave />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingId(null);
-                          setEditingContent("");
-                        }}
-                        className="text-neutral-500 hover:text-yellow-500"
-                        disabled={editLoading}
-                      >
-                        <FaTimes />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => {
-                          setEditingId(comment.id);
-                          setEditingContent(comment.content || "");
-                        }}
-                        className="text-neutral-500 hover:text-primary"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(comment.id)}
-                        className="text-neutral-500 hover:text-red-500"
-                      >
-                        <FaTrash />
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
+              {user &&
+                (user.id === comment.author_id ||
+                  user.email === "leon.dalle@proton.me") && (
+                  <div className="flex items-center gap-2">
+                    {editingId === comment.id ? (
+                      <>
+                        <button
+                          onClick={() => handleSaveEdit(comment.id)}
+                          className="text-neutral-500 hover:text-green-500"
+                          disabled={editLoading}
+                        >
+                          <FaSave />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingId(null);
+                            setEditingContent("");
+                          }}
+                          className="text-neutral-500 hover:text-yellow-500"
+                          disabled={editLoading}
+                        >
+                          <FaTimes />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => {
+                            setEditingId(comment.id);
+                            setEditingContent(comment.content || "");
+                          }}
+                          className="text-neutral-500 hover:text-primary"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(comment.id)}
+                          className="text-neutral-500 hover:text-red-500"
+                        >
+                          <FaTrash />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
             </div>
             <div className="pl-10">
               {editingId === comment.id ? (
