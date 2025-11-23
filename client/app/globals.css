@@ -199,3 +199,229 @@
 .animation-delay-1200 {
   animation-delay: 1200ms;
 }
+
+/* Prose list styles for WYSIWYG content */
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.prose ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.prose li {
+  margin-bottom: 0.5rem !important;
+  display: list-item !important;
+}
+
+.prose ul ul {
+  list-style-type: circle !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.prose ol ol {
+  list-style-type: lower-alpha !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Additional specific selectors for nested content */
+.prose div ul,
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.prose div ol,
+.prose ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Ensure list items are visible */
+.prose div li {
+  margin-bottom: 0.5rem !important;
+  display: list-item !important;
+  list-style-position: outside !important;
+}
+
+/* Specific overrides for Quill-generated content */
+.prose .ql-editor ul,
+.prose [data-list="bullet"] {
+  list-style-type: disc !important;
+}
+
+.prose .ql-editor ol,
+.prose [data-list="ordered"] {
+  list-style-type: decimal !important;
+}
+
+/* Force correct list styles regardless of nesting */
+.prose ul li {
+  list-style-type: disc !important;
+}
+
+.prose ol li {
+  list-style-type: decimal !important;
+}
+
+/* More specific Quill list targeting */
+.prose li[data-list="bullet"],
+.prose ul li,
+.prose .ql-editor ul li {
+  list-style-type: disc !important;
+}
+
+.prose li[data-list="ordered"],
+.prose ol li,
+.prose .ql-editor ol li {
+  list-style-type: decimal !important;
+}
+
+/* Reset any conflicting styles */
+.prose li {
+  list-style: inherit !important;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.prose h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Dark mode headings */
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3 {
+  color: #ffffff;
+}
+
+/* Ensure headings are properly styled in both themes */
+.prose-invert h1,
+.prose-invert h2,
+.prose-invert h3 {
+  color: #ffffff;
+}
+
+.prose blockquote {
+  border-left: 4px solid currentColor;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.prose strong {
+  font-weight: 700;
+}
+
+.prose em {
+  font-style: italic;
+}
+
+.prose a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.prose a:hover {
+  opacity: 0.8;
+}
+
+.prose a[target="_blank"]::after {
+  content: " ↗";
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+/* Fix Quill link tooltip positioning and visibility */
+.ql-tooltip {
+  position: absolute !important;
+  z-index: 9999 !important;
+  background: white !important;
+  border: 1px solid #ccc !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  left: auto !important;
+  right: 20px !important;
+  transform: none !important;
+}
+
+.ql-tooltip.ql-editing {
+  left: auto !important;
+  right: 20px !important;
+}
+
+.ql-snow .ql-tooltip[data-mode=link]::before {
+  content: "Entrez l'URL:" !important;
+}
+
+.ql-tooltip input {
+  background: white !important;
+  color: black !important;
+  border: 1px solid #ccc !important;
+  padding: 4px 8px !important;
+  border-radius: 3px !important;
+}
+
+.ql-tooltip .ql-action,
+.ql-tooltip .ql-remove {
+  margin-left: 8px !important;
+  color: #0066cc !important;
+  cursor: pointer !important;
+  text-decoration: underline !important;
+}
+
+/* Ensure Quill editor container has relative positioning */
+.ql-container {
+  position: relative !important;
+}
+
+/* Improve Quill editor in dark theme context */
+.ql-editor {
+  min-height: 150px !important;
+}
+
+/* Fix link button and tooltip contrast */
+.ql-snow .ql-tooltip {
+  background-color: #ffffff !important;
+  border: 1px solid #ccc !important;
+  color: #000 !important;
+}
+
+.ql-snow .ql-tooltip input[type=text] {
+  background-color: #ffffff !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+}

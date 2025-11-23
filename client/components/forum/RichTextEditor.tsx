@@ -25,7 +25,7 @@ export default function RichTextEditor({
         { indent: "-1" },
         { indent: "+1" },
       ],
-      ["link", "image"],
+      ["link"],
       ["clean"],
     ],
   };
@@ -40,18 +40,18 @@ export default function RichTextEditor({
     "list",
     "indent",
     "link",
-    "image",
   ];
 
   return (
-    <div className="bg-white text-black rounded-md overflow-hidden">
+    <div className="bg-white text-black rounded-md overflow-hidden relative">
       <ReactQuill
         theme="snow"
         value={value}
         onChange={onChange}
         modules={modules}
         formats={formats}
-        className="h-64 mb-12" // mb-12 to make space for the toolbar if needed or just spacing
+        className="h-64 mb-12"
+        placeholder="Tapez votre contenu ici..."
       />
     </div>
   );

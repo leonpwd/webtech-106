@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import getSupabase from "@/lib/supabaseClient";
 import { formatDistanceToNow } from "date-fns";
 import { FaTrash, FaEdit, FaSave, FaTimes } from "react-icons/fa";
+import DOMPurify from "isomorphic-dompurify";
 import LikeButton from "./LikeButton";
+import RichTextEditor from "./RichTextEditor";
 
 export default function CommentSection({ postId }: { postId: string }) {
   const [comments, setComments] = useState<any[]>([]);
@@ -75,9 +77,39 @@ export default function CommentSection({ postId }: { postId: string }) {
     if (data) setComments(data);
   }
 
+  // Helper function to check if content is empty (including empty HTML tags)
+  function isContentEmpty(content: string): boolean {
+    if (!content || !content.trim()) return true;
+    // Remove HTML tags and check if there's actual text content
+    const textContent = content.replace(/<[^>]*>/g, '').trim();
+    return textContent.length === 0;
+  }
+
+  // Helper function to fix relative links
+  function processLinksInContent(content: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, 'text/html');
+    const links = doc.querySelectorAll('a[href]');
+    
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && !href.startsWith('http://') && !href.startsWith('https://') && !href.startsWith('mailto:') && !href.startsWith('#')) {
+        // Add https:// to relative links that look like URLs
+        if (href.includes('.') && !href.startsWith('/')) {
+          link.setAttribute('href', `https://${href}`);
+        }
+        // Add target="_blank" for external links
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    
+    return doc.body.innerHTML;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!newComment.trim() || !email.trim()) return;
+    if (isContentEmpty(newComment) || !email.trim()) return;
     setLoading(true);
 
     const supabase = getSupabase();
@@ -124,7 +156,7 @@ export default function CommentSection({ postId }: { postId: string }) {
   }
 
   async function handleSaveEdit(commentId: string) {
-    if (!editingContent.trim()) return;
+    if (isContentEmpty(editingContent)) return;
     setEditLoading(true);
     const supabase = getSupabase();
     if (!supabase) {
@@ -297,20 +329,22 @@ export default function CommentSection({ postId }: { postId: string }) {
             <div className="pl-10">
               {editingId === comment.id ? (
                 <div>
-                  <textarea
-                    value={editingContent}
-                    onChange={(e) => setEditingContent(e.target.value)}
-                    className="w-full bg-white dark:bg-black/20 border border-neutral-300 dark:border-white/10 rounded px-3 py-2 h-24 text-neutral-900 dark:text-white"
-                  />
+                  <div className="mb-4">
+                    <RichTextEditor
+                      value={editingContent}
+                      onChange={setEditingContent}
+                    />
+                  </div>
                   {editingId === comment.id && editError && (
                     <div className="mt-2 text-sm text-red-600">{editError}</div>
                   )}
                 </div>
               ) : (
                 <>
-                  <p className="text-neutral-700 dark:text-neutral-300 text-sm mb-2">
-                    {comment.content}
-                  </p>
+                  <div 
+                    className="text-neutral-700 dark:text-neutral-300 text-sm mb-2 prose prose-sm max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processLinksInContent(comment.content)) }}
+                  />
                   <LikeButton targetId={comment.id} type="comment" />
                 </>
               )}
@@ -344,11 +378,9 @@ export default function CommentSection({ postId }: { postId: string }) {
           <label className="block text-sm mb-1 text-neutral-700 dark:text-neutral-300">
             Comment
           </label>
-          <textarea
+          <RichTextEditor
             value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="w-full bg-white dark:bg-black/20 border border-neutral-300 dark:border-white/10 rounded px-3 py-2 h-24 text-neutral-900 dark:text-white"
-            required
+            onChange={setNewComment}
           />
         </div>
         <button

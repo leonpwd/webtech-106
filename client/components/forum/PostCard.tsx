@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { FaComment } from "react-icons/fa";
 import LikeButton from "./LikeButton";
 
 interface PostCardProps {
@@ -15,6 +16,7 @@ interface PostCardProps {
     author_avatar_url?: string;
     categories?: string[];
     tags?: string[];
+    comments?: { count: number }[];
   };
 }
 
@@ -22,6 +24,9 @@ export default function PostCard({ post }: PostCardProps) {
   // Strip HTML tags for preview
   const preview =
     post.content.replace(/<[^>]+>/g, "").substring(0, 150) + "...";
+  
+  // Get comment count
+  const commentCount = post.comments?.[0]?.count || 0;
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-lg p-6 hover:bg-white/10 transition">
@@ -67,6 +72,10 @@ export default function PostCard({ post }: PostCardProps) {
 
         <div className="flex items-center justify-between mt-4">
           <LikeButton targetId={post.id} type="post" />
+          <div className="flex items-center gap-1 text-neutral-400 text-sm">
+            <FaComment />
+            <span>{commentCount} comment{commentCount !== 1 ? 's' : ''}</span>
+          </div>
         </div>
       </Link>
     </div>

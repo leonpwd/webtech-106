@@ -38,7 +38,10 @@ export default function PostList({
 
     let queryBuilder = supabase
       .from("posts")
-      .select("*", { count: "exact" })
+      .select(`
+        *,
+        comments(count)
+      `, { count: "exact" })
       .order("created_at", { ascending: false })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 

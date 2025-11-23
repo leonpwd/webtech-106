@@ -16,6 +16,28 @@ export default function PostDetail({ id }: { id: string }) {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
 
+  // Helper function to fix relative links
+  function processLinksInContent(content: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, 'text/html');
+    const links = doc.querySelectorAll('a[href]');
+    
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && !href.startsWith('http://') && !href.startsWith('https://') && !href.startsWith('mailto:') && !href.startsWith('#')) {
+        // Add https:// to relative links that look like URLs
+        if (href.includes('.') && !href.startsWith('/')) {
+          link.setAttribute('href', `https://${href}`);
+        }
+        // Add target="_blank" for external links
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+    
+    return doc.body.innerHTML;
+  }
+
   useEffect(() => {
     const supabase = getSupabase();
     if (!supabase) return;
@@ -125,7 +147,7 @@ export default function PostDetail({ id }: { id: string }) {
 
         <div
           className="prose prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processLinksInContent(post.content)) }}
         />
 
         <div className="mt-8">
