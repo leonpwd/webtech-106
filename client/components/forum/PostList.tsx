@@ -8,7 +8,7 @@ import { FaSpinner } from "react-icons/fa";
 export default function PostList({
   searchParams,
 }: {
-  searchParams?: { q?: string };
+  searchParams?: { q?: string; categories?: string; tags?: string };
 }) {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,10 +17,12 @@ export default function PostList({
   const PAGE_SIZE = 10;
 
   const query = searchParams?.q || "";
+  const categories = searchParams?.categories || "";
+  const tags = searchParams?.tags || "";
 
   useEffect(() => {
     fetchPosts();
-  }, [page, query]);
+  }, [page, query, categories, tags]);
 
   async function fetchPosts() {
     setLoading(true);
@@ -40,15 +42,25 @@ export default function PostList({
       .order("created_at", { ascending: false })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
-    if (query) {
+    if (query.trim()) {
       // Simple text search on title or content
-      // Note: For better search, use the SQL function search_posts if configured,
-      // but for simplicity/standard supabase, we can use ilike or textSearch
-      // queryBuilder = queryBuilder.textSearch('fts', query) // requires fts setup
-      // Let's use ilike for now on title
       queryBuilder = queryBuilder.or(
-        `title.ilike.%${query}%,content.ilike.%${query}%`,
+        `title.ilike.%${query.trim()}%,content.ilike.%${query.trim()}%`,
       );
+    }
+
+    if (categories && categories.trim()) {
+      const categoryArray = categories.split(',').map(c => c.trim()).filter(Boolean);
+      if (categoryArray.length > 0) {
+        queryBuilder = queryBuilder.overlaps('categories', categoryArray);
+      }
+    }
+
+    if (tags && tags.trim()) {
+      const tagArray = tags.split(',').map(t => t.trim()).filter(Boolean);
+      if (tagArray.length > 0) {
+        queryBuilder = queryBuilder.overlaps('tags', tagArray);
+      }
     }
 
     const { data, error, count } = await queryBuilder;

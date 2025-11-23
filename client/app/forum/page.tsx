@@ -1,11 +1,12 @@
 import PostList from "@/components/forum/PostList";
+import SearchFilters from "@/components/forum/SearchFilters";
 import Link from "next/link";
 import { FaPlus } from "react-icons/fa";
 
 export default async function ForumPage({
   searchParams,
 }: {
-  searchParams?: { q?: string } | Promise<{ q?: string } | undefined>;
+  searchParams?: { q?: string; categories?: string; tags?: string } | Promise<{ q?: string; categories?: string; tags?: string } | undefined>;
 }) {
   // Next may provide `searchParams` as a Promise in some runtimes — await to be safe
   const params = await (searchParams as any);
@@ -30,30 +31,7 @@ export default async function ForumPage({
           </Link>
         </div>
 
-        <div className="mb-8">
-          <form className="relative">
-            <input
-              type="text"
-              name="q"
-              placeholder="Search discussions..."
-              defaultValue={params?.q}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-6 py-4 pl-12 focus:outline-none focus:border-primary transition"
-            />
-            <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </form>
-        </div>
+        <SearchFilters initialParams={params} />
 
         <PostList searchParams={params} />
       </div>
